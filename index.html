@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Mijn Kunstwerken Gallery</title>
 
 <!-- Font Awesome -->
@@ -109,7 +109,6 @@ footer { text-align:center; padding:2rem 1rem; opacity:0.75; background: rgba(10
       <span><span class="heart" data-id="jelly1">♡</span><span class="like-count" data-id="jelly1">0</span></span>
     </figcaption>
   </figure>
-
   <figure>
     <a href="#img2"><img src="images/theodore.png" alt="Théodore"></a>
     <figcaption>
@@ -117,7 +116,6 @@ footer { text-align:center; padding:2rem 1rem; opacity:0.75; background: rgba(10
       <span><span class="heart" data-id="theodore">♡</span><span class="like-count" data-id="theodore">0</span></span>
     </figcaption>
   </figure>
-
   <figure>
     <a href="#img3"><img src="images/princesse.jpg" alt="Princesse"></a>
     <figcaption>
@@ -138,7 +136,7 @@ footer { text-align:center; padding:2rem 1rem; opacity:0.75; background: rgba(10
 
 <!-- HARTJES + GSHEET SYNCHRONISATIE -->
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbx6kvGm6d3JTNnCnPwR5TUFEWCCn_GPVuchGeULD2i6L3pLs1BzXhrMyP7rgZS-I1L2fg/exec"; // <-- Vervang YOUR_SHEET_ID
+const scriptURL = "https://script.google.com/macros/s/AKfycbx6kvGm6d3JTNnCnPwR5TUFEWCCn_GPVuchGeULD2i6L3pLs1BzXhrMyP7rgZS-I1L2fg/exec";
 
 document.querySelectorAll('.heart').forEach(heart=>{
   const id = heart.dataset.id;
