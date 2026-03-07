@@ -252,11 +252,17 @@
 
     .lightbox:target { display: flex; }
 
-    .lightbox img {
-      max-width: 95vw;
-      max-height: 92vh;
-      border-radius: 12px;
-    }
+.lightbox img {
+  max-width: 100vw;
+  max-height: 100vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 0 70px rgba(212,175,55,0.35);
+}
+
+
 
     .close {
       position: absolute;
@@ -366,11 +372,11 @@
   </main>
 
   <!-- LIGHTBOXES -->
-  <div class="lightbox" id="img1"><a href="#" class="close">×</a><img src="images/jelly1 (20221030121321).jpg"></div>
-  <div class="lightbox" id="img2"><a href="#" class="close">×</a><img src="images/Théodore (20221020050509).png"></div>
-  <div class="lightbox" id="img3"><a href="#" class="close">×</a><img src="images/Princesse (20221013080117).jpg"></div>
-  <div class="lightbox" id="img4"><a href="#" class="close">×</a><img src="images/Project (20221027055049).jpg"></div>
-  <div class="lightbox" id="img5"><a href="#" class="close">×</a><img src="images/Zonondergang.jpg"></div>
+<div class="lightbox" id="img1"><a href="#" class="close">×</a><img src="images/jelly1 (20221030121321).jpg"></div>
+<div class="lightbox" id="img2"><a href="#" class="close">×</a><img src="images/Théodore (20221020050509).png"></div>
+<div class="lightbox" id="img3"><a href="#" class="close">×</a><img src="images/Princesse (20221013080117).jpg"></div>
+<div class="lightbox" id="img4"><a href="#" class="close">×</a><img src="images/Project (20221027055049).jpg"></div>
+<div class="lightbox" id="img5"><a href="#" class="close">×</a><img src="images/Zonondergang.jpg"></div>
 
   <footer>
     <p>© 2026 — Thibault P</p>
@@ -417,4 +423,3 @@
 
 </body>
 </html>
-
