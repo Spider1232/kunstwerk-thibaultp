@@ -6,3 +6,5 @@ Website Kunstwerkjes en 3D models
 - index.html
 - about.html
 - images/
+
+20261003 Update 
