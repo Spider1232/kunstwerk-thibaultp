@@ -3,8 +3,8 @@ Kunst van Thibault P (Tekening Atelier Polet)
 
 Website Kunstwerkjes en 3D models
 
-- index.html
+- index.html     (Nieuwe fix mobile versie - tekst toegevoegd)
 - about.html
-- images/
+- images/ 
 
-20261003 Update 
+04-04-26 UPDATE
