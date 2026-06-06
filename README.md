@@ -7,5 +7,6 @@ Website Kunstwerkjes en 3D models
 - about.html
 - images/
 - site/
-
-04-04-26 UPDATE
+- video/
+  
+- 6-6-26 UPDATE
