@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mijn Bot</title>
+</head>
+<body>
+
+<h2>Chatbot</h2>
+<input type="text" id="userInput" placeholder="Typ iets...">
+<button onclick="reply()">Verstuur</button>
+
+<p id="response"></p>
+
+
+<a href="https://www.facebook.com/sharer/sharer.php?u=https://spider1232.github.io/kunstwerk-thibaultp/"
+   target="_blank">
+  Deel op Facebook
+</a>
+
+<script>
+function reply() {
+  let input = document.getElementById("userInput").value;
+  let output = "";
+
+  if (input.toLowerCase() === "hallo") {
+    output = "Hallo! 👋";
+  } else if (input.toLowerCase() === "hoe gaat het") {
+    output = "Goed! En met jou?";
+  } else {
+    output = "Dat begrijp ik niet 🤖";
+  }
+
+  document.getElementById("response").innerText = output;
+}
+</script>
+
+</body>
+</html>
