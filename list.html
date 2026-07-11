@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Au bonheur des Anges - Liste des commandes</title>
+    <title>Au bonheur des Anges - Liste Rose</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -38,394 +38,132 @@
             box-sizing: border-box;
             padding: 16px;
         }
-        .status-msg {
-            text-align: center;
-            color: #7d7f82;
-            font-size: 14px;
-            margin: 20px 0;
+        .actions-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            width: 100%;
         }
-        .order-card {
+        .search-card {
+            background: #ffffff;
+            border: 1px solid #f3d6ed;
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        .search-input {
+            width: 100%;
+            border: none;
+            font-size: 15px;
+            color: #202124;
+            outline: none;
+            background: transparent;
+        }
+        .btn-pdf {
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 1px 2px rgba(155, 89, 182, 0.2);
+            transition: background 0.2s;
+        }
+        .btn-pdf:hover {
+            background-color: #8e44ad;
+        }
+        .app-card {
             background: #ffffff;
             border: 1px solid #f3d6ed;
             border-radius: 12px;
             padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 6px rgba(155, 89, 182, 0.03);
-            position: relative;
-        }
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            border-bottom: 1px solid #fbeef7;
-            padding-bottom: 6px;
-        }
-        .order-name {
-            font-weight: 700;
-            color: #9b59b6;
-            font-size: 15px;
-        }
-        .order-date {
-            font-size: 12px;
-            color: #7d7f82;
-        }
-        .order-details {
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #3c4043;
-        }
-        .order-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-        }
-        .order-price {
-            font-weight: 600;
-            color: #202124;
-        }
-        .badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .badge-paid { background-color: #d4edda; color: #155724; }
-        .badge-unpaid { background-color: #f8d7da; color: #721c24; }
-        .badge-refund { background-color: #fff3cd; color: #856404; }
-        
-        .btn-delete {
-            background: none;
-            border: none;
-            color: #e74c3c;
-            font-size: 14px;
-            cursor: pointer;
-            padding: 4px;
-            font-weight: 600;
-        }
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
+            box-shadow: 0 2px 8px rgba(155, 89, 182, 0.05);
             width: 100%;
-            background-color: #ffffff;
-            display: flex;
-            justify-content: space-around;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            border-top: 1px solid #dadce0;
-            z-index: 1000;
-        }
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            padding: 12px 0;
-            color: #5f6368;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 500;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-        .nav-item.active {
-            color: #9b59b6;
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
-
-<div class="app-header">
-    <h1>Au bonheur des Anges — Commandes Live</h1>
-</div>
-
-<div class="app-view">
-    <div id="status" class="status-msg">Chargement des commandes en cours...</div>
-    <div id="orders-container"></div>
-</div>
-
-<div class="bottom-nav">
-    <a href="command.html" class="nav-item">📝<br><span>Formulaire</span></a>
-    <a href="list.html" class="nav-item active">📊<br><span>LIST</span></a>
-    <a href="infoapp.html" class="nav-item">ℹ️<br><span>INFO</span></a>
-</div>
-
-<script>
-    // AUTOMATISCHE INSTELLINGEN VOOR JOUW GITHUB
-    const GITHUB_USER = "Spider1232";
-    const GITHUB_REPO = "kunstwerk-thibaultp";
-    const FILE_PATH = "orders.json";
-    
-    // PLAK HIER EXACT DEZELFDE SLEUTEL (TOKEN) ALS IN DE FORMULAIRE CODE
-    const GITHUB_TOKEN = "<!DOCTYPE html>
-<html lang="fr-BE">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Au bonheur des Anges - Liste des commandes</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #fbeef7;
-            color: #202124;
-            margin: 0;
-            padding: 0;
-            padding-bottom: 70px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .app-header {
-            background-color: #ffffff;
-            width: 100%;
-            text-align: center;
-            padding: 12px 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .app-header h1 {
-            font-size: 16px;
-            margin: 0;
-            color: #9b59b6;
-            font-weight: 600;
-        }
-        .app-view {
-            width: 100%;
-            max-width: 480px;
             box-sizing: border-box;
-            padding: 16px;
         }
-        .status-msg {
-            text-align: center;
-            color: #7d7f82;
+        .section-title {
             font-size: 14px;
-            margin: 20px 0;
-        }
-        .order-card {
-            background: #ffffff;
-            border: 1px solid #f3d6ed;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 6px rgba(155, 89, 182, 0.03);
-            position: relative;
-        }
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            border-bottom: 1px solid #fbeef7;
-            padding-bottom: 6px;
-        }
-        .order-name {
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #7d7f82;
+            margin-top: 0;
+            margin-bottom: 16px;
             font-weight: 700;
-            color: #9b59b6;
-            font-size: 15px;
-        }
-        .order-date {
-            font-size: 12px;
-            color: #7d7f82;
-        }
-        .order-details {
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #3c4043;
-        }
-        .order-meta {
+            border-bottom: 1px solid #fbeef7;
+            padding-bottom: 8px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
         }
-        .order-price {
-            font-weight: 600;
-            color: #202124;
-        }
-        .badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .badge-paid { background-color: #d4edda; color: #155724; }
-        .badge-unpaid { background-color: #f8d7da; color: #721c24; }
-        .badge-refund { background-color: #fff3cd; color: #856404; }
-        
-        .btn-delete {
-            background: none;
-            border: none;
-            color: #e74c3c;
-            font-size: 14px;
-            cursor: pointer;
-            padding: 4px;
-            font-weight: 600;
-        }
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #ffffff;
-            display: flex;
-            justify-content: space-around;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            border-top: 1px solid #dadce0;
-            z-index: 1000;
-        }
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            padding: 12px 0;
-            color: #5f6368;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 500;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-        .nav-item.active {
-            color: #9b59b6;
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
-
-<div class="app-header">
-    <h1>Au bonheur des Anges — Commandes Live</h1>
-</div>
-
-<div class="app-view">
-    <div id="status" class="status-msg">Chargement des commandes en cours...</div>
-    <div id="orders-container"></div>
-</div>
-
-<div class="bottom-nav">
-    <a href="command.html" class="nav-item">📝<br><span>Formulaire</span></a>
-    <a href="list.html" class="nav-item active">📊<br><span>LIST</span></a>
-    <a href="infoapp.html" class="nav-item">ℹ️<br><span>INFO</span></a>
-</div>
-
-<script>
-    // AUTOMATISCHE INSTELLINGEN VOOR JOUW GITHUB
-    const GITHUB_USER = "Spider1232";
-    const GITHUB_REPO = "kunstwerk-thibaultp";
-    const FILE_PATH = "orders.json";
-    
-    // PLAK HIER EXACT DEZELFDE SLEUTEL (TOKEN) ALS IN DE FORMULAIRE CODE
-    const GITHUB_TOKEN = "<!DOCTYPE html>
-<html lang="fr-BE">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Au bonheur des Anges - Liste des commandes</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        .counter-badge {
             background-color: #fbeef7;
-            color: #202124;
-            margin: 0;
-            padding: 0;
-            padding-bottom: 70px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .app-header {
-            background-color: #ffffff;
-            width: 100%;
-            text-align: center;
-            padding: 12px 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .app-header h1 {
-            font-size: 16px;
-            margin: 0;
             color: #9b59b6;
-            font-weight: 600;
-        }
-        .app-view {
-            width: 100%;
-            max-width: 480px;
-            box-sizing: border-box;
-            padding: 16px;
-        }
-        .status-msg {
-            text-align: center;
-            color: #7d7f82;
-            font-size: 14px;
-            margin: 20px 0;
-        }
-        .order-card {
-            background: #ffffff;
-            border: 1px solid #f3d6ed;
+            padding: 2px 8px;
             border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 6px rgba(155, 89, 182, 0.03);
-            position: relative;
-        }
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            border-bottom: 1px solid #fbeef7;
-            padding-bottom: 6px;
-        }
-        .order-name {
-            font-weight: 700;
-            color: #9b59b6;
-            font-size: 15px;
-        }
-        .order-date {
             font-size: 12px;
-            color: #7d7f82;
         }
-        .order-details {
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #3c4043;
+        .list-container {
+            padding: 0;
+            margin: 0;
+            list-style: none;
         }
-        .order-meta {
+        .list-item {
+            background: #ffffff;
+            border-bottom: 1px solid #fbeef7;
+            padding: 14px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 13px;
         }
-        .order-price {
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        .item-main {
+            flex: 1;
+        }
+        .item-title {
+            font-size: 15px;
             font-weight: 600;
             color: #202124;
+            margin-bottom: 3px;
         }
-        .badge {
-            padding: 4px 8px;
-            border-radius: 12px;
+        .item-details {
+            font-size: 13px;
+            color: #5f6368;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
         }
-        .badge-paid { background-color: #d4edda; color: #155724; }
-        .badge-unpaid { background-color: #f8d7da; color: #721c24; }
-        .badge-refund { background-color: #fff3cd; color: #856404; }
-        
-        .btn-delete {
+        .status-paid { background-color: #e6f4ea; color: #137333; }
+        .status-unpaid { background-color: #fce8e6; color: #c5221f; }
+        .status-refund { background-color: #e8f0fe; color: #1a73e8; }
+
+        .btn-icon {
             background: none;
             border: none;
-            color: #e74c3c;
-            font-size: 14px;
+            color: #9b59b6;
             cursor: pointer;
-            padding: 4px;
+            font-size: 13px;
             font-weight: 600;
+            padding: 6px;
         }
+        .btn-icon-delete { color: #d93025; }
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -455,17 +193,45 @@
             color: #9b59b6;
             font-weight: 600;
         }
+
+        @media print {
+            body {
+                background-color: #fbeef7 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding-bottom: 0;
+            }
+            .app-view { max-width: 100%; width: 100%; padding: 0; }
+            .app-card { border: none; box-shadow: none; }
+            .actions-bar, .item-actions, .bottom-nav { display: none !important; }
+            .list-item { border-bottom: 1px solid #e8bada; }
+        }
     </style>
 </head>
 <body>
 
 <div class="app-header">
-    <h1>Au bonheur des Anges — Commandes Live</h1>
+    <h1>Au bonheur des Anges</h1>
 </div>
 
 <div class="app-view">
-    <div id="status" class="status-msg">Chargement des commandes en cours...</div>
-    <div id="orders-container"></div>
+    <div class="actions-bar">
+        <div class="search-card">
+            <span>🔍</span>
+            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher..." onkeyup="filterItems()">
+        </div>
+        <button class="btn-pdf" onclick="exportToPDF()">
+            <span>📄</span> PDF
+        </button>
+    </div>
+
+    <div class="app-card">
+        <h2 class="section-title">
+            <span>Liste des commandes</span>
+            <span id="orderCount" class="counter-badge">0</span>
+        </h2>
+        <ul id="itemsList" class="list-container"></ul>
+    </div>
 </div>
 
 <div class="bottom-nav">
@@ -475,137 +241,106 @@
 </div>
 
 <script>
-    // AUTOMATISCHE INSTELLINGEN VOOR JOUW GITHUB
-    const GITHUB_USER = "Spider1232";
-    const GITHUB_REPO = "kunstwerk-thibaultp";
-    const FILE_PATH = "orders.json";
-    
-    // PLAK HIER EXACT DEZELFDE SLEUTEL (TOKEN) ALS IN DE FORMULAIRE CODE
-    const GITHUB_TOKEN = "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"; 
-
-    let currentSha = "";
     let allItems = [];
 
-    // Functie om de live lijst van GitHub te downloaden
-    async function loadOrders() {
-        const statusDiv = document.getElementById("status");
-        const container = document.getElementById("orders-container");
-        container.innerHTML = "";
+    function loadItems() {
+        allItems = JSON.parse(localStorage.getItem("items")) || [];
+        renderList(allItems);
+    }
+
+    function renderList(items) {
+        const list = document.getElementById("itemsList");
+        const countBadge = document.getElementById("orderCount");
+        if (!list) return;
         
-        try {
-            const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${FILE_PATH}`;
-            let response = await fetch(url, {
-                headers: { "Authorization": `token ${GITHUB_TOKEN}` }
-            });
+        list.innerHTML = ''; 
+        countBadge.textContent = items.length;
 
-            if (!response.ok) {
-                statusDiv.innerText = "Erreur de chargement ou fichier orders.json introuvable.";
-                return;
+        if (items.length === 0) {
+            list.innerHTML = '<li style="color: #70757a; font-size: 14px; text-align: center; padding: 20px 0;">Aucune commande</li>';
+            return;
+        }
+
+        items.forEach((item, index) => {
+            const li = document.createElement("li");
+            li.className = 'list-item';
+            
+            const paidClass = item.betaald ? 'status-paid' : 'status-unpaid';
+            const paidText = item.betaald ? 'Payé' : 'Non Payé';
+            
+            const prijsPerStuk = parseFloat(item.prijs) || 0;
+            const totaalBedrag = (item.aantal * prijsPerStuk).toFixed(2);
+
+            let refundBadge = '';
+            if (item.terugbetaald) {
+                refundBadge = `<span class="status-badge status-refund">Remboursé</span>`;
             }
 
-            const fileData = await response.json();
-            currentSha = fileData.sha; // Belangrijk voor eventueel verwijderen
-            
-            // Decodeer de gecodeerde tekst van GitHub netjes naar gewone tekst (UTF-8 veilig)
-            const decodedText = decodeURIComponent(atob(fileData.content).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            
-            allItems = JSON.parse(decodedText || "[]");
-
-            if (allItems.length === 0) {
-                statusDiv.innerText = "Aucune commande pour le moment.";
-                return;
-            }
-
-            statusDiv.innerText = ""; // Haal laadtekst weg
-
-            // Bouw de kaartjes voor het scherm
-            allItems.forEach((item, index) => {
-                const totalCardPrice = (item.aantal * item.prijs).toFixed(2);
-                
-                let statusBadge = `<span class="badge badge-unpaid">Non payé</span>`;
-                if (item.terugbetaald) {
-                    statusBadge = `<span class="badge badge-refund">Remboursé</span>`;
-                } else if (item.betaald) {
-                    statusBadge = `<span class="badge badge-paid">Payé</span>`;
-                }
-
-                const card = document.createElement("div");
-                card.className = "order-card";
-                card.innerHTML = `
-                    <div class="order-header">
-                        <span class="order-name">${escapeHTML(item.naam)}</span>
-                        <span class="order-date">${item.datum || ''}</span>
+            li.innerHTML = `
+                <div class="item-main">
+                    <div class="item-title">${item.naam || 'Inconnu'}</div>
+                    <div class="item-details">
+                        <span><strong>${item.text || 'Rien'}</strong></span>
+                        <span>(${item.aantal || 0}x &bull; €${prijsPerStuk.toFixed(2)})</span>
+                        <span style="color: #9b59b6; font-weight: bold;">Total: €${totaalBedrag}</span>
+                        <span>&bull; ${item.datum || 'N/A'}</span>
+                        <span class="status-badge ${paidClass}">${paidText}</span>
+                        ${refundBadge}
                     </div>
-                    <div class="order-details">
-                        <strong>${item.aantal}x</strong> - ${escapeHTML(item.text)}
-                    </div>
-                    <div class="order-meta">
-                        <span class="order-price">${totalCardPrice} €</span>
-                        ${statusBadge}
-                        <button class="btn-delete" onclick="deleteItem(${index})">Supprimer</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
+                </div>
+                <div class="item-actions">
+                    <button class="btn-icon" onclick="editItem(${index})">Edit</button>
+                    <button class="btn-icon btn-icon-delete" onclick="deleteItem(${index})">Delete</button>
+                </div>
+            `;
+            list.appendChild(li);
+        });
+    }
 
-        } catch (error) {
-            console.error(error);
-            statusDiv.innerText = "Erreur lors de la connexion avec le Cloud GitHub.";
+    function exportToPDF() {
+        window.print();
+    }
+
+    function filterItems() {
+        const query = document.getElementById("searchInput").value.toLowerCase();
+        const filtered = allItems.filter(item => {
+            return (item.naam || '').toLowerCase().includes(query) || (item.text || '').toLowerCase().includes(query);
+        });
+        renderList(filtered);
+    }
+
+    function deleteItem(index) {
+        if (confirm("Supprimer cette commande ?")) {
+            allItems.splice(index, 1); 
+            localStorage.setItem("items", JSON.stringify(allItems));
+            loadItems(); 
         }
     }
 
-    // Functie om een bestelling te wissen en de cloud bij te werken
-    async function deleteItem(index) {
-        if (!confirm("Voulez-vous vraiment supprimer cette commande ?")) return;
+    function editItem(index) {
+        const item = allItems[index];
+        const newName = prompt("Nom:", item.naam) || item.naam;
+        const newAantal = prompt("Nombre:", item.aantal) || item.aantal;
+        const newPrijs = prompt("Prix (€):", item.prijs) || item.prijs;
+        const newText = prompt("Commande:", item.text) || item.text;
+        const newDatum = prompt("Date:", item.datum) || item.datum;
+        const newBetaald = confirm("Payé (Ok = Oui, Annuler = Non) ?");
+        const newTerugbetaald = confirm("Remboursé / Terugbetaald (Ok = Oui, Annuler = Non) ?");
 
-        const statusDiv = document.getElementById("status");
-        statusDiv.innerText = "Mise à jour du Cloud...";
-
-        // Verwijder het item uit onze lokale lijst
-        allItems.splice(index, 1);
-
-        try {
-            const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${FILE_PATH}`;
-            const updatedContentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(allItems, null, 2))));
-
-            let updateResponse = await fetch(url, {
-                method: "PUT",
-                headers: {
-                    "Authorization": `token ${GITHUB_TOKEN}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: "Suppression d'une commande en direct",
-                    content: updatedContentBase64,
-                    sha: currentSha
-                })
-            });
-
-            if (updateResponse.ok) {
-                // Herlaad de lijst om de nieuwe status/sha op te halen
-                loadOrders();
-            } else {
-                alert("Erreur lors de la suppression sur GitHub.");
-                loadOrders();
-            }
-        } catch (error) {
-            console.error(error);
-            alert("Erreur réseau.");
-            loadOrders();
-        }
+        allItems[index] = { 
+            naam: newName, 
+            aantal: parseInt(newAantal) || 0, 
+            prijs: parseFloat(newPrijs) || 0, 
+            text: newText, 
+            datum: newDatum, 
+            betaald: newBetaald,
+            terugbetaald: newTerugbetaald 
+        };
+        localStorage.setItem("items", JSON.stringify(allItems));
+        loadItems(); 
     }
 
-    // Veiligheid tegen vreemde tekens in namen/teksten
-    function escapeHTML(str) {
-        return str.replace(/[&<>'"]/g, 
-            tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-        );
-    }
-
-    // Start direct met laden als de pagina opent
-    window.onload = loadOrders;
+    window.onload = loadItems;
 </script>
 </body>
 </html>
