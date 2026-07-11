@@ -214,25 +214,7 @@
     <h1>Au bonheur des Anges</h1>
 </div>
 
-<div class="app-view">
-    <div class="actions-bar">
-        <div class="search-card">
-            <span>🔍</span>
-            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher..." onkeyup="filterItems()">
-        </div>
-        <button class="btn-pdf" onclick="exportToPDF()">
-            <span>📄</span> PDF
-        </button>
-    </div>
-
-    <div class="app-card">
-        <h2 class="section-title">
-            <span>Liste des commandes</span>
-            <span id="orderCount" class="counter-badge">0</span>
-        </h2>
-        <ul id="itemsList" class="list-container"></ul>
-    </div>
-</div>
+<embed src="Prix boutique Au bonheur des Anges.  2026.pdf" type="application/pdf" height="650px" width="100%">
 
 <div class="bottom-nav">
     <a href="command.html" class="nav-item">📝<br><span>COMMAND</span></a>
@@ -241,108 +223,5 @@
     <a href="infoapp.html" class="nav-item">ℹ️<br><span>INFO</span></a>
 
 </div>
-
-<script>
-    let allItems = [];
-
-    function loadItems() {
-        allItems = JSON.parse(localStorage.getItem("items")) || [];
-        renderList(allItems);
-    }
-
-    function renderList(items) {
-        const list = document.getElementById("itemsList");
-        const countBadge = document.getElementById("orderCount");
-        if (!list) return;
-        
-        list.innerHTML = ''; 
-        countBadge.textContent = items.length;
-
-        if (items.length === 0) {
-            list.innerHTML = '<li style="color: #70757a; font-size: 14px; text-align: center; padding: 20px 0;">Aucune commande</li>';
-            return;
-        }
-
-        items.forEach((item, index) => {
-            const li = document.createElement("li");
-            li.className = 'list-item';
-            
-            const paidClass = item.betaald ? 'status-paid' : 'status-unpaid';
-            const paidText = item.betaald ? 'Payé' : 'Non Payé';
-            
-            const prijsPerStuk = parseFloat(item.prijs) || 0;
-            const totaalBedrag = (item.aantal * prijsPerStuk).toFixed(2);
-
-            let refundBadge = '';
-            if (item.terugbetaald) {
-                refundBadge = `<span class="status-badge status-refund">Remboursé</span>`;
-            }
-
-            li.innerHTML = `
-                <div class="item-main">
-                    <div class="item-title">${item.naam || 'Inconnu'}</div>
-                    <div class="item-details">
-                        <span><strong>${item.text || 'Rien'}</strong></span>
-                        <span>(${item.aantal || 0}x &bull; €${prijsPerStuk.toFixed(2)})</span>
-                        <span style="color: #9b59b6; font-weight: bold;">Total: €${totaalBedrag}</span>
-                        <span>&bull; ${item.datum || 'N/A'}</span>
-                        <span class="status-badge ${paidClass}">${paidText}</span>
-                        ${refundBadge}
-                    </div>
-                </div>
-                <div class="item-actions">
-                    <button class="btn-icon" onclick="editItem(${index})">Edit</button>
-                    <button class="btn-icon btn-icon-delete" onclick="deleteItem(${index})">Delete</button>
-                </div>
-            `;
-            list.appendChild(li);
-        });
-    }
-
-    function exportToPDF() {
-        window.print();
-    }
-
-    function filterItems() {
-        const query = document.getElementById("searchInput").value.toLowerCase();
-        const filtered = allItems.filter(item => {
-            return (item.naam || '').toLowerCase().includes(query) || (item.text || '').toLowerCase().includes(query);
-        });
-        renderList(filtered);
-    }
-
-    function deleteItem(index) {
-        if (confirm("Supprimer cette commande ?")) {
-            allItems.splice(index, 1); 
-            localStorage.setItem("items", JSON.stringify(allItems));
-            loadItems(); 
-        }
-    }
-
-    function editItem(index) {
-        const item = allItems[index];
-        const newName = prompt("Nom:", item.naam) || item.naam;
-        const newAantal = prompt("Nombre:", item.aantal) || item.aantal;
-        const newPrijs = prompt("Prix (€):", item.prijs) || item.prijs;
-        const newText = prompt("Commande:", item.text) || item.text;
-        const newDatum = prompt("Date:", item.datum) || item.datum;
-        const newBetaald = confirm("Payé (Ok = Oui, Annuler = Non) ?");
-        const newTerugbetaald = confirm("Remboursé / Terugbetaald (Ok = Oui, Annuler = Non) ?");
-
-        allItems[index] = { 
-            naam: newName, 
-            aantal: parseInt(newAantal) || 0, 
-            prijs: parseFloat(newPrijs) || 0, 
-            text: newText, 
-            datum: newDatum, 
-            betaald: newBetaald,
-            terugbetaald: newTerugbetaald 
-        };
-        localStorage.setItem("items", JSON.stringify(allItems));
-        loadItems(); 
-    }
-
-    window.onload = loadItems;
-</script>
 </body>
 </html>
