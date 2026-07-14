@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Polet Creations - Creativiteit in elke lijn en vorm (about)</title>
+  <title>Polet Creations - Over mij</title>
   <link rel="icon" href="site/favicon.png">
 
-  
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -24,206 +23,285 @@
       background-color: rgba(174, 196, 214, 0.75);
       background-blend-mode: multiply;
     }
-    .sponsor-container {
-      margin: 2rem auto;
-      max-width: 1200px;
-      justify-content: center;
-    }
-    /* === NAVIGATIE === */
+
+    /* === NAVIGATIE STIJL (CONCORDANT MET INDEX / VIDEO) === */
     .top-nav {
-      background: rgba(20,20,35,0.55);
-      backdrop-filter: blur(14px);
-      padding: 1rem 5vw;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       position: sticky;
       top: 0;
       z-index: 2000;
-      border-bottom: 1px solid rgba(212,175,55,0.35);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
     }
 
     .nav-container {
-      max-width: 1400px;
+      max-width: 1440px;
+      height: 70px;
       margin: 0 auto;
+      padding: 0 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: relative;
     }
 
     .logo {
-      color: #d4af37;
-      font-size: 1.8rem;
+      color: #ffffff;
+      font-size: 1.35rem;
       font-weight: 700;
       text-decoration: none;
-      text-shadow: 0 0 12px rgba(212,175,55,0.4);
+      letter-spacing: -0.5px;
+    }
+    
+    .logo span { color: #d4af37; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      height: 100%;
     }
 
-    /* DESKTOP MENU */
     .nav-links a {
-      color: #e0e0e0;
-      margin: 0 1.2rem;
+      color: #94a3b8;
+      padding: 0.5rem 1rem;
       text-decoration: none;
-      font-size: 1.15rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border-radius: 6px;
+      position: relative;
+      transition: all 0.25s ease;
     }
 
-    .nav-links a:hover,
-    .nav-links a.active { color: #d4af37; }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background-color: #d4af37;
+      transition: width 0.25s ease;
+    }
+
+    .nav-links a:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-links a.active { 
+      color: #d4af37;
+      font-weight: 600;
+    }
+    
+    .nav-links a.active::after { width: 60%; }
+
+    .social-icons {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
 
     .social-icons a {
-      color: #e0e0e0;
-      font-size: 1.5rem;
-      margin-left: 1rem;
+      color: #94a3b8;
+      font-size: 1.15rem;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      text-decoration: none;
+      transition: all 0.25s ease;
     }
-
-    /* === MOBIEL MENU === */
-    #menu-toggle { display: none; }
-
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 6px;
-      cursor: pointer;
-    }
-
-    .hamburger span {
-      width: 28px;
-      height: 3px;
+    
+    .social-icons a:hover { 
+      color: #ffffff; 
       background: #d4af37;
-      border-radius: 3px;
+      border-color: #d4af37;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
     }
 
-    /* VERBERG MOBIEL MENU OP DESKTOP */
-    .mobile-menu {
-      display: none !important;
-    }
+    /* MOBIEL MENU */
+    #menu-toggle { display: none; }
+    .hamburger { display: none; flex-direction: column; gap: 6px; cursor: pointer; padding: 0.5rem; }
+    .hamburger span { width: 24px; height: 2px; background: #ffffff; transition: all 0.3s ease; }
+    .mobile-menu { display: none !important; }
 
-    @media (max-width: 800px) {
+    @media (max-width: 850px) {
       .hamburger { display: flex; }
-
       .nav-links, .social-icons { display: none; }
-
+      #menu-toggle:checked ~ .hamburger span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+      #menu-toggle:checked ~ .hamburger span:nth-child(2) { opacity: 0; }
+      #menu-toggle:checked ~ .hamburger span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
       #menu-toggle:checked ~ .mobile-menu { display: flex !important; }
 
       .mobile-menu {
         flex-direction: column;
         position: absolute;
-        top: 100%;
+        top: 70px;
         left: 0;
         width: 100%;
-        background: rgba(26,26,46,0.97);
-        padding: 1.8rem 2rem;
-        border-bottom: 1px solid rgba(212,175,55,0.35);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        background: rgba(15, 23, 42, 0.98);
+        backdrop-filter: blur(20px);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        gap: 1rem;
         z-index: 1500;
       }
-
-      .mobile-menu a {
-        color: #e0e0e0;
-        font-size: 1.35rem;
-        padding: 0.8rem 0;
-        text-decoration: none;
-      }
-
-      .mobile-menu a:hover { color: #d4af37; }
-
-      .mobile-social {
-        margin-top: 1.2rem;
-        display: flex;
-        gap: 1.4rem;
-      }
-
-      .mobile-social a {
-        font-size: 1.8rem;
-        color: #e0e0e0;
-      }
-
-      .mobile-social a:hover { color: #d4af37; }
+      .mobile-menu a { color: #e2e8f0; font-size: 1.1rem; padding: 0.75rem 1rem; text-decoration: none; border-radius: 6px; }
+      .mobile-menu a:hover, .mobile-menu a.active { background: rgba(255, 255, 255, 0.05); color: #d4af37; }
+      .mobile-social { margin-top: 0.5rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; gap: 1rem; }
+      .mobile-social a { font-size: 1.4rem; color: #94a3b8; }
     }
 
-    /* === HEADER === */
-    header {
+    /* === ABOUT INHOUD === */
+    header.main-header {
       text-align: center;
-      padding: 6rem 1rem 4rem;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+      padding: 5rem 1rem 2rem;
     }
 
     h1 {
-      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-size: clamp(3rem, 7vw, 4.5rem);
       color: #d4af37;
       text-shadow: 0 3px 12px rgba(0,0,0,0.8);
     }
 
-    /* === GALLERY === */
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 2.2rem;
-      padding: 2rem 5vw 4rem;
-      max-width: 1800px;
+    .about-container {
+      max-width: 900px;
       margin: 0 auto;
+      padding: 0 1.5rem 4rem;
     }
 
-    figure {
-      position: relative;
-      overflow: hidden;
-      border-radius: 14px;
-      background: #111;
-      box-shadow: 0 10px 35px rgba(0,0,0,0.7);
-      transition: 0.4s;
+    .about-card {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 3rem 2rem;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     }
 
-    figure:hover { transform: translateY(-14px); }
-
-    img {
-      width: 100%;
-      aspect-ratio: 4/5;
+    .profile-img {
+      width: 180px;
+      height: 180px;
       object-fit: cover;
-      transition: 0.5s;
+      border-radius: 50%;
+      margin-bottom: 2rem;
+      border: 3px solid #d4af37;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
     }
 
-    figure:hover img { transform: scale(1.09); }
-
-    figcaption {
-      padding: 1.3rem 1.5rem;
-      font-size: 0.98rem;
-      color: #ccc;
-      background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
+    .about-card h2 {
+      color: #ffffff;
+      font-size: 1.25rem;
+      font-weight: 400;
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      text-shadow: none;
     }
 
-    /* === LIGHTBOX === */
-    .lightbox {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.96);
-      z-index: 3000;
-      align-items: center;
+    .about-card h2 strong {
+      color: #d4af37;
+    }
+
+    .about-socials {
+      display: flex;
       justify-content: center;
-      padding: 1rem;
+      gap: 1.5rem;
+      margin-top: 2rem;
     }
 
-    .lightbox:target { display: flex; }
+    .about-socials a {
+      color: #ffffff;
+      font-size: 1.6rem;
+      transition: color 0.3s, transform 0.3s;
+    }
 
-    .lightbox img {
-      max-width: 100vw;
-      max-height: 100vh;
-      width: auto;
+    .about-socials a:hover {
+      color: #d4af37;
+      transform: scale(1.15);
+    }
+
+    /* === STEUN & SPONSOR STYLES === */
+    .support-section {
+      text-align: center;
+      padding: 5rem 1.5rem;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(212, 175, 55, 0.25);
+    }
+
+    .support-section h2 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #ffffff;
+      max-width: 800px;
+      margin: 0 auto 1.5rem;
+      text-shadow: none;
+    }
+
+    .support-logo-box {
+      margin-bottom: 2.5rem;
+    }
+    
+    .support-logo {
+      width: 130px;
       height: auto;
-      object-fit: contain;
-      border-radius: 12px;
-      box-shadow: 0 0 70px rgba(212,175,55,0.35);
+      opacity: 0.85;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    
+    .support-logo:hover {
+      opacity: 1;
+      transform: scale(1.03);
+    }
+    
+    .sponsor-container {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
     }
 
-    .close {
-      position: absolute;
-      top: 1.5rem;
-      right: 1.5rem;
-      font-size: 3rem;
-      color: white;
-      cursor: pointer;
+    .sponsor-container a {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem 2rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.05rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .sponsor-container a i {
+      color: #d4af37;
+      font-size: 1.2rem;
+    }
+
+    .sponsor-container a:hover { 
+      background: rgba(212, 175, 55, 0.1); 
+      border-color: #d4af37;
+      color: #d4af37;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
     }
 
     footer {
@@ -232,22 +310,17 @@
       padding: 4rem 1rem 2rem;
       opacity: 0.75;
       background: rgba(65, 124, 190, 0.8);
-    }
-    h2 {
-      color: #0e0a0a;
-      text-shadow: 0 0 8px rgba(17, 89, 224, 0.5);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
   </style>
 </head>
-
 
 <body>
 
   <!-- NAVIGATIE -->
   <nav class="top-nav">
     <div class="nav-container">
-
-      <a href="index.html" class="logo">Kunst van Thibault P</a>
+      <a href="index.html" class="logo">Thibault Polet<span> Gallerij</span></a>
 
       <input type="checkbox" id="menu-toggle">
       <label for="menu-toggle" class="hamburger">
@@ -256,7 +329,7 @@
 
       <!-- DESKTOP MENU -->
       <div class="nav-links">
-        <a href="index.html">Gallery</a>
+        <a href="index.html">Gallerij</a>
         <a href="video.html">Outdoor Vlogs</a>
         <a href="about.html" class="active">Over mij</a>
       </div>
@@ -267,12 +340,11 @@
         <a href="https://www.facebook.com/polet.creations/" target="_blank"><i class="fab fa-facebook"></i></a>
       </div>
 
+      <!-- MOBIEL MENU -->
       <div class="mobile-menu">
-        <a href="index.html">Gallery</a>
+        <a href="index.html">Gallerij</a>
         <a href="video.html">Outdoor Vlogs</a>
-        <a href="about.html">Over mij</a>
-        <hr style="border-color: rgba(112, 197, 15, 0.801); margin: 1rem 0;">
-        <span style="color: #d4af37; font-weight: 600; font-size: 1.1rem;">Volg mij op sociale media</span>
+        <a href="about.html" class="active">Over mij</a>
 
         <div class="mobile-social">
           <a href="https://www.instagram.com/polet_creations_/" target="_blank"><i class="fab fa-instagram"></i></a>
@@ -280,31 +352,25 @@
           <a href="https://www.facebook.com/polet.creations/" target="_blank"><i class="fab fa-facebook"></i></a>
         </div>
       </div>
-
     </div>
   </nav>
 
-
-  <header>
+  <header class="main-header">
     <h1>Over mij</h1>
   </header>
 
   <div class="about-container">
     <div class="about-card">
-
-
+      <img src="images/profile.jpg" alt="Profielfoto Thibault" class="profile-img">
       
-  <header>
-  <img src="images/profile.jpg" alt="Profielfoto Thibault" style="width: 30%;height: 50%; border-radius: 12px; margin-bottom: 1.5rem; box-shadow: 0 8px 25px rgba(0,0,0,0.7);">
       <h2>
-        <color: #d4af37; text-shadow: 0 0 8px rgba(212,175,55,0.5);">
-        Hallo! Ik ben <strong>Thibault</strong>, een digitale kunstenaar uit België.  
-        Ik maak kunstwerken met passie, gevoel en oog voor detail.  
+        Hallo! Ik ben <strong>Thibault</strong>, een digitale kunstenaar uit België. 
+        Ik maak kunstwerken met passie, gevoel en oog voor detail. 
         Elk werk vertelt een verhaal — van dierenportretten tot sfeervolle landschappen.
       </h2>
 
       <h2>
-        Mijn doel is om emoties vast te leggen in kleur, licht en vorm.  
+        Mijn doel is om emoties vast te leggen in kleur, licht en vorm. 
         Bedankt dat je mijn kunst bekijkt!
       </h2>
 
@@ -313,29 +379,17 @@
         <a href="https://www.tiktok.com/@polet_thibault" target="_blank"><i class="fab fa-tiktok"></i></a>
         <a href="https://www.facebook.com/polet.creations/" target="_blank"><i class="fab fa-facebook"></i></a>
       </div>
-  </header>
-
     </div>
   </div>
 
-  <header>
-  <h2>Liefde voor dieren kent geen grenzen. Jij kunt helpen! Steun via onderstaan links en maak het verschil. ❤️ </h2>
-  <img src="site/au_bonheur_des_anges.png" alt="Au bonheur des Anges" style="height: 70px; border-radius: 2px; box-shadow: 0 4px 2px rgba(201, 82, 195, 0.3);">
-  <div class="sponsor-container" style="display: flex; gap: 20px;">
-  <a href="https://www.facebook.com/profile.php?id=61567110585000" target="_blank">
-    < "Au bonheur des Anges" >
-  </a>
-  <a href="https://www.facebook.com/profile.php?id=100076190710949&utm_source=ig&utm_medium=social&utm_content=link_in_bio#" target="_blank">
-< "Photo Design" >
-   
-  </a>
-</div>
-<script type="text/javascript" src="https://freecountercode.com/service/Zd6isTizLX2mAmlIiDt1"></script>
-<!-- END Free Counter Code! counter -->
-    <p>© GITHUB 2026 — Thibault P (Polet Creations Creativiteit in elke lijn en vorm) 
+
+
+  <footer>
+    <!-- BEGIN Free Counter Code! counter -->
+    <script type="text/javascript" src="https://freecountercode.com/service/Zd6isTizLX2mAmlIiDt1"></script>
+    <!-- END Free Counter Code! counter -->
+    <p>© GITHUB 2026 — Thibault P (Polet Creations Creativiteit in elke lijn en vorm)</p>
   </footer>
-
-
 
 </body>
 </html>
