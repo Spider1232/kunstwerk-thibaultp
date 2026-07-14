@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "naam": "Jean Dupont",
+    "aantal": 3,
+    "prijs": 4.50,
+    "text": "Éclair au chocolat",
+    "datum": "2026-07-14",
+    "betaald": true,
+    "terugbetaald": false
+  },
+  {
+    "naam": "Marie Claire",
+    "aantal": 1,
+    "prijs": 12.00,
+    "text": "Gâteau d'anniversaire",
+    "datum": "2026-07-15",
+    "betaald": false,
+    "terugbetaald": false
+  }
+]
