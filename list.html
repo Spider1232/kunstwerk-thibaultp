@@ -240,15 +240,36 @@
     <a href="list.html" class="nav-item active">📊<br><span>LIST</span></a>
     <a href="listcommand.html" class="nav-item">ℹ️<br><span>PDF list</span></a>
     <a href="infoapp.html" class="nav-item">ℹ️<br><span>INFO</span></a>
-
 </div>
 
 <script>
     let allItems = [];
 
-    function loadItems() {
-        allItems = JSON.parse(localStorage.getItem("items")) || [];
-        renderList(allItems);
+    // Jouw specifieke GitHub-gegevens
+    const GITHUB_USER = "Spider1232"; 
+    const GITHUB_REPO = "kunstwerk-thibaultp";
+    const BRANCH = "main"; 
+
+    // Live data ophalen van GitHub
+    async function loadItems() {
+        const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${BRANCH}/orders.json`;
+        
+        try {
+            // We voegen een unieke timestamp toe om te voorkomen dat de browser een oude versie van het bestand laadt (caching)
+            const response = await fetch(`${url}?t=${Date.now()}`);
+            if (!response.ok) {
+                throw new Error("Kan orders.json niet vinden op GitHub");
+            }
+            const data = await response.json();
+            
+            allItems = data;
+            renderList(allItems.map((item, index) => ({ ...item, originalIndex: index })));
+        } catch (error) {
+            console.error("Fout bij live laden van GitHub:", error);
+            // Fallback naar localStorage voor lokaal testen
+            allItems = JSON.parse(localStorage.getItem("items")) || [];
+            renderList(allItems.map((item, index) => ({ ...item, originalIndex: index })));
+        }
     }
 
     function renderList(items) {
@@ -264,7 +285,7 @@
             return;
         }
 
-        items.forEach((item, index) => {
+        items.forEach((item) => {
             const li = document.createElement("li");
             li.className = 'list-item';
             
@@ -292,8 +313,8 @@
                     </div>
                 </div>
                 <div class="item-actions">
-                    <button class="btn-icon" onclick="editItem(${index})">Edit</button>
-                    <button class="btn-icon btn-icon-delete" onclick="deleteItem(${index})">Delete</button>
+                    <button class="btn-icon" onclick="editItem(${item.originalIndex})">Edit</button>
+                    <button class="btn-icon btn-icon-delete" onclick="deleteItem(${item.originalIndex})">Delete</button>
                 </div>
             `;
             list.appendChild(li);
@@ -306,41 +327,28 @@
 
     function filterItems() {
         const query = document.getElementById("searchInput").value.toLowerCase();
-        const filtered = allItems.filter(item => {
-            return (item.naam || '').toLowerCase().includes(query) || (item.text || '').toLowerCase().includes(query);
+        const itemsWithIndex = allItems.map((item, index) => ({ ...item, originalIndex: index }));
+        
+        const filtered = itemsWithIndex.filter(item => {
+            return (item.naam || '').toLowerCase().includes(query) || 
+                   (item.text || '').toLowerCase().includes(query);
         });
+        
         renderList(filtered);
     }
 
-    function deleteItem(index) {
-        if (confirm("Supprimer cette commande ?")) {
-            allItems.splice(index, 1); 
-            localStorage.setItem("items", JSON.stringify(allItems));
-            loadItems(); 
+    function deleteItem(originalIndex) {
+        const item = allItems[originalIndex];
+        if (confirm(`Supprimer la commande de ${item.naam} ?`)) {
+            const issueTitle = encodeURIComponent(`DELETE: ${item.naam} (${item.datum})`);
+            const issueBody = encodeURIComponent(`Verwijder index: ${originalIndex}\nNaam: ${item.naam}`);
+            window.open(`https://github.com/${GITHUB_USER}/${GITHUB_REPO}/issues/new?title=${issueTitle}&body=${issueBody}&labels=delete-order`, '_blank');
         }
     }
 
-    function editItem(index) {
-        const item = allItems[index];
-        const newName = prompt("Nom:", item.naam) || item.naam;
-        const newAantal = prompt("Nombre:", item.aantal) || item.aantal;
-        const newPrijs = prompt("Prix (€):", item.prijs) || item.prijs;
-        const newText = prompt("Commande:", item.text) || item.text;
-        const newDatum = prompt("Date:", item.datum) || item.datum;
-        const newBetaald = confirm("Payé (Ok = Oui, Annuler = Non) ?");
-        const newTerugbetaald = confirm("Remboursé / Terugbetaald (Ok = Oui, Annuler = Non) ?");
-
-        allItems[index] = { 
-            naam: newName, 
-            aantal: parseInt(newAantal) || 0, 
-            prijs: parseFloat(newPrijs) || 0, 
-            text: newText, 
-            datum: newDatum, 
-            betaald: newBetaald,
-            terugbetaald: newTerugbetaald 
-        };
-        localStorage.setItem("items", JSON.stringify(allItems));
-        loadItems(); 
+    function editItem(originalIndex) {
+        alert("Je wordt nu doorgestuurd naar GitHub om orders.json rechtstreeks aan te passen.");
+        window.open(`https://github.com/${GITHUB_USER}/${GITHUB_REPO}/edit/${BRANCH}/orders.json`, '_blank');
     }
 
     window.onload = loadItems;
