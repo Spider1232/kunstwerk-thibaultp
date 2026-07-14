@@ -245,33 +245,13 @@
 <script>
     let allItems = [];
 
-    // Jouw specifieke GitHub-gegevens
-    const GITHUB_USER = "Spider1232"; 
-    const GITHUB_REPO = "kunstwerk-thibaultp";
-    const BRANCH = "main"; 
-
-    // Live data ophalen van GitHub
-    async function loadItems() {
-        const url = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${BRANCH}/orders.json`;
-        
-        try {
-            // We voegen een unieke timestamp toe om te voorkomen dat de browser een oude versie van het bestand laadt (caching)
-            const response = await fetch(`${url}?t=${Date.now()}`);
-            if (!response.ok) {
-                throw new Error("Kan orders.json niet vinden op GitHub");
-            }
-            const data = await response.json();
-            
-            allItems = data;
-            renderList(allItems.map((item, index) => ({ ...item, originalIndex: index })));
-        } catch (error) {
-            console.error("Fout bij live laden van GitHub:", error);
-            // Fallback naar localStorage voor lokaal testen
-            allItems = JSON.parse(localStorage.getItem("items")) || [];
-            renderList(allItems.map((item, index) => ({ ...item, originalIndex: index })));
-        }
+    function loadItems() {
+        allItems = JSON.parse(localStorage.getItem("items")) || [];
+        // Au chargement initial, on affiche tout le tableau
+        renderList(allItems.map((item, index) => ({ ...item, originalIndex: index })));
     }
 
+    // Le paramètre "items" contient maintenant des objets enrichis de leur "originalIndex"
     function renderList(items) {
         const list = document.getElementById("itemsList");
         const countBadge = document.getElementById("orderCount");
@@ -300,6 +280,7 @@
                 refundBadge = `<span class="status-badge status-refund">Remboursé</span>`;
             }
 
+            // On passe l'originalIndex (l'index réel dans allItems) aux fonctions d'édition et de suppression
             li.innerHTML = `
                 <div class="item-main">
                     <div class="item-title">${item.naam || 'Inconnu'}</div>
@@ -327,6 +308,8 @@
 
     function filterItems() {
         const query = document.getElementById("searchInput").value.toLowerCase();
+        
+        // On map d'abord pour garder une trace de l'index d'origine dans allItems
         const itemsWithIndex = allItems.map((item, index) => ({ ...item, originalIndex: index }));
         
         const filtered = itemsWithIndex.filter(item => {
@@ -338,17 +321,40 @@
     }
 
     function deleteItem(originalIndex) {
-        const item = allItems[originalIndex];
-        if (confirm(`Supprimer la commande de ${item.naam} ?`)) {
-            const issueTitle = encodeURIComponent(`DELETE: ${item.naam} (${item.datum})`);
-            const issueBody = encodeURIComponent(`Verwijder index: ${originalIndex}\nNaam: ${item.naam}`);
-            window.open(`https://github.com/${GITHUB_USER}/${GITHUB_REPO}/issues/new?title=${issueTitle}&body=${issueBody}&labels=delete-order`, '_blank');
+        if (confirm("Supprimer cette commande ?")) {
+            allItems.splice(originalIndex, 1); 
+            localStorage.setItem("items", JSON.stringify(allItems));
+            
+            // On vide la recherche pour éviter les incohérences visuelles après suppression
+            document.getElementById("searchInput").value = "";
+            loadItems(); 
         }
     }
 
     function editItem(originalIndex) {
-        alert("Je wordt nu doorgestuurd naar GitHub om orders.json rechtstreeks aan te passen.");
-        window.open(`https://github.com/${GITHUB_USER}/${GITHUB_REPO}/edit/${BRANCH}/orders.json`, '_blank');
+        const item = allItems[originalIndex];
+        const newName = prompt("Nom:", item.naam) || item.naam;
+        const newAantal = prompt("Nombre:", item.aantal) || item.aantal;
+        const newPrijs = prompt("Prix (€):", item.prijs) || item.prijs;
+        const newText = prompt("Commande:", item.text) || item.text;
+        const newDatum = prompt("Date:", item.datum) || item.datum;
+        const newBetaald = confirm("Payé (Ok = Oui, Annuler = Non) ?");
+        const newTerugbetaald = confirm("Remboursé / Terugbetaald (Ok = Oui, Annuler = Non) ?");
+
+        allItems[originalIndex] = { 
+            naam: newName, 
+            aantal: parseInt(newAantal) || 0, 
+            prijs: parseFloat(newPrijs) || 0, 
+            text: newText, 
+            datum: newDatum, 
+            betaald: newBetaald,
+            terugbetaald: newTerugbetaald 
+        };
+        localStorage.setItem("items", JSON.stringify(allItems));
+        
+        // On vide la recherche pour rafraîchir proprement la vue globale
+        document.getElementById("searchInput").value = "";
+        loadItems(); 
     }
 
     window.onload = loadItems;
