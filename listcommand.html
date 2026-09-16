@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr-BE">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Au bonheur des Anges | Liste PDF</title>
+    <link rel="icon" href="logo.jpg">
+    <style>
+        :root {
+            /* Transparantie ingesteld op 20% (0.20 dekkend) */
+            --glass-bg: rgba(255, 255, 255, 0.20);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-blur: 16px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            background-color: #fbeef7;
+            color: #202124;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            width: 100%;
+            text-align: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.3s;
+        }
+        .app-header h1 {
+            font-size: 16px;
+            margin: 0;
+            color: #8e44ad;
+            font-weight: 600;
+        }
+
+        .db-status-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .status-dot.online {
+            background-color: #2ecc71;
+            box-shadow: 0 0 8px #2ecc71;
+        }
+        .status-dot.offline {
+            background-color: #e74c3c;
+            box-shadow: 0 0 8px #e74c3c;
+        }
+
+        .pdf-container {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 60px;
+            box-sizing: border-box;
+        }
+        embed {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--glass-border);
+            z-index: 1000;
+            transition: background 0.3s;
+        }
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        .nav-item.active {
+            color: #8e44ad;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <h1>Au bonheur des Anges</h1>
+    <div class="db-status-container">
+        <span id="statusDot" class="status-dot offline"></span>
+        <span id="statusText" style="color: #e74c3c;">Offline</span>
+    </div>
+</div>
+
+<div class="pdf-container">
+    <embed src="Prix boutique Au bonheur des Anges.  2026.pdf" type="application/pdf">
+</div>
+
+<div class="bottom-nav">
+    <a href="index.html" class="nav-item">📝<br><span>COMMANDER</span></a>
+    <a href="list.html" class="nav-item">📊<br><span>LISTE</span></a>
+    <a href="listcommand.html" class="nav-item active">📋<br><span>LISTE PDF</span></a>
+    <a href="infoapp.html" class="nav-item">ℹ️<br><span>INFO</span></a>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "JOUW_API_KEY", 
+        authDomain: "cloudstockage-b1580.firebaseapp.com",
+        databaseURL: "https://cloudstockage-b1580-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "cloudstockage-b1580",
+        storageBucket: "cloudstockage-b1580.appspot.com",
+        messagingSenderId: "524333606775",
+        appId: "JOUW_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const connectedRef = ref(db, ".info/connected");
+    onValue(connectedRef, (snap) => {
+        const statusDot = document.getElementById("statusDot");
+        const statusText = document.getElementById("statusText");
+
+        if (snap.val() === true) {
+            statusDot.className = "status-dot online";
+            statusText.textContent = "en ligne";
+            statusText.style.color = "#2ecc71";
+        } else {
+            statusDot.className = "status-dot offline";
+            statusText.textContent = "hors ligne";
+            statusText.style.color = "#e74c3c";
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedBg = localStorage.getItem("customAppBackground");
+        if (savedBg) {
+            document.body.style.backgroundImage = `url('${savedBg}')`;
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundPosition = "center";
+            document.body.style.backgroundAttachment = "fixed";
+            document.body.style.backgroundRepeat = "no-repeat";
+        }
+
+        const savedOpacity = localStorage.getItem("appGlassOpacity") || "0.20";
+        document.documentElement.style.setProperty('--glass-bg', `rgba(255, 255, 255, ${savedOpacity})`);
+    });
+</script>
+
+</body>
+</html>

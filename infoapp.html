@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr-BE">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Information | Au bonheur des Anges | </title>
+    <link rel="icon" href="logo.jpg">
+    <style>
+        :root {
+            --primary: #8e44ad;
+            --primary-dark: #6c3483;
+            /* Transparantie ingesteld op 20% (0.20 dekkend) */
+            --glass-bg: rgba(255, 255, 255, 0.20);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-blur: 16px;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            background-color: #fbeef7;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .app-header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            width: 100%;
+            text-align: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.3s;
+        }
+
+        .app-header h1 {
+            font-size: 17px;
+            margin: 0;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .app-view {
+            width: 100%;
+            max-width: 480px;
+            box-sizing: border-box;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .logo-img {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 4px;
+            box-shadow: 0 4px 15px rgba(142, 68, 173, 0.15);
+            border: 1px solid var(--glass-border);
+        }
+
+        .info-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+            transition: background 0.3s;
+        }
+
+        .info-card.text-center {
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: rgba(142, 68, 173, 0.15);
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 10px;
+        }
+
+        .info-card h2 {
+            font-size: 17px;
+            color: var(--text-main);
+            margin: 0 0 6px 0;
+            font-weight: 700;
+        }
+
+        .info-card .subtitle {
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 600;
+            margin: 0 0 12px 0;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: rgba(142, 68, 173, 0.15);
+            margin: 14px 0;
+            border: none;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .feature-icon {
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 8px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1px solid var(--glass-border);
+        }
+
+        .feature-text strong {
+            color: var(--text-main);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .feature-text span {
+            color: var(--text-muted);
+        }
+
+        .meta-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(142, 68, 173, 0.2);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #1e8449;
+            font-weight: 700;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--glass-border);
+            z-index: 1000;
+            transition: background 0.3s;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            color: #7f8c8d;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        @media print {
+            body { 
+                background-color: #ffffff !important; 
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding-bottom: 0; 
+            }
+            .app-view { max-width: 100%; padding: 0; }
+            .info-card { border: none; box-shadow: none; background: #fff; }
+            .bottom-nav { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <h1>Au bonheur des Anges</h1>
+</div>
+
+<main class="app-view">
+    <div class="brand-section">
+        <img src="logo.jpg" alt="Logo Au bonheur des Anges" class="logo-img">
+    </div>
+
+    <div class="info-card text-center">
+        <span class="badge">Application</span>
+        <h2>Gestion des Commandes</h2>
+        <p class="subtitle">Au bonheur des Anges</p>
+        
+        <hr class="divider">
+        
+        <p style="font-size: 13px; color: var(--text-main); margin: 0; line-height: 1.5;">
+            Cette application permet de créer, suivre et exporter facilement les commandes des clients en temps réel grâce à la base de données Firebase.
+        </p>
+    </div>
+
+    <div class="info-card">
+        <h2>Guide des fonctionnalités</h2>
+        <hr class="divider">
+        
+        <ul class="feature-list">
+            <li class="feature-item">
+                <div class="feature-icon">📝</div>
+                <div class="feature-text">
+                    <strong>Commander</strong>
+                    <span>Ajoutez rapidement de nouvelles commandes dans le système.</span>
+                </div>
+            </li>
+            <li class="feature-item">
+                <div class="feature-icon">📊</div>
+                <div class="feature-text">
+                    <strong>Liste & Actions</strong>
+                    <span>Consultez, modifiez, supprimez et partagez directement les commandes.</span>
+                </div>
+            </li>
+            <li class="feature-item">
+                <div class="feature-icon">📄</div>
+                <div class="feature-text">
+                    <strong>Exportation PDF</strong>
+                    <span>Générez un document PDF prêt à être imprimé ou partagé.</span>
+                </div>
+            </li>
+            <li class="feature-item">
+                <div class="feature-icon">⚙️</div>
+                <div class="feature-text">
+                    <strong>Personnalisation iOS</strong>
+                    <span>Changez l'arrière-plan et ajustez la transparence des cartes en temps réel.</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="info-card">
+        <h2>Informations système</h2>
+        <hr class="divider">
+
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+            <span>Statut Firebase:</span>
+            <span class="status-pill"><span class="status-dot"></span> Connecté</span>
+        </div>
+
+        <div class="meta-group">
+            <span>Mise à jour: 16-09-2026</span>
+            <span>Version 26.2</span>
+        </div>
+    </div>
+</main>
+
+<nav class="bottom-nav">
+    <a href="index.html" class="nav-item">📝<br><span>COMMANDER</span></a>
+    <a href="list.html" class="nav-item">📊<br><span>LISTE</span></a>
+    <a href="listcommand.html" class="nav-item">📋<br><span>LISTE PDF</span></a>
+    <a href="infoapp.html" class="nav-item active">ℹ️<br><span>INFO</span></a>
+</nav>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedBg = localStorage.getItem("customAppBackground");
+        if (savedBg) {
+            document.body.style.backgroundImage = `url('${savedBg}')`;
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundPosition = "center";
+            document.body.style.backgroundAttachment = "fixed";
+            document.body.style.backgroundRepeat = "no-repeat";
+        }
+
+        const savedOpacity = localStorage.getItem("appGlassOpacity") || "0.20";
+        document.documentElement.style.setProperty('--glass-bg', `rgba(255, 255, 255, ${savedOpacity})`);
+    });
+</script>
+
+</body>
+</html>
