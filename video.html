@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Outdoor Vlogs</title>
+  <title>Outdoor Vlogs & AI-Projecten | Thibault Polet</title>
   <link rel="icon" href="site/favicon.png">
 
   <!-- Font Awesome -->
@@ -16,23 +16,22 @@
       font-family: system-ui, -apple-system, sans-serif;
       color: #e0e0e0;
       line-height: 1.6;
+      background-color: #0d1117;
       background-size: 2000px 800px;
       background-position: center;
       background-attachment: fixed;
-      background-color: rgba(0, 0, 0, 0.75);
-      background-blend-mode: multiply;
     }
 
-    /* === EXACT DEZELFDE NAVIGATIE STIJL VAN DE HOOFDPAGINA === */
+    /* === NAVIGATIE BALK === */
     .top-nav {
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       position: sticky;
       top: 0;
       z-index: 2000;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
     }
 
     .nav-container {
@@ -73,18 +72,6 @@
       transition: all 0.25s ease;
     }
 
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 2px;
-      background-color: #d4af37;
-      transition: width 0.25s ease;
-    }
-
     .nav-links a:hover {
       color: #ffffff;
       background: rgba(255, 255, 255, 0.05);
@@ -95,7 +82,16 @@
       font-weight: 600;
     }
     
-    .nav-links a.active::after { width: 60%; }
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 2px;
+      background-color: #d4af37;
+    }
 
     .social-icons {
       display: flex;
@@ -126,7 +122,7 @@
       box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
     }
 
-    /* MOBIEL MENU (HAMBURGER) */
+    /* MOBIEL MENU */
     #menu-toggle { display: none; }
     .hamburger { display: none; flex-direction: column; gap: 6px; cursor: pointer; padding: 0.5rem; }
     .hamburger span { width: 24px; height: 2px; background: #ffffff; transition: all 0.3s ease; }
@@ -162,145 +158,164 @@
     /* === HEADER === */
     header {
       text-align: center;
-      padding: 6rem 1rem 4rem;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+      padding: 5rem 1rem 3rem;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
     }
 
     h1 {
-      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-size: clamp(2.8rem, 7vw, 5rem);
       color: #d4af37;
       text-shadow: 0 3px 12px rgba(0,0,0,0.8);
+      margin-bottom: 0.5rem;
+    }
+
+    .header-sub {
+      font-size: 1.15rem;
+      color: #cbd5e1;
+      max-width: 800px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .share-link {
+      color: #00f1dd;
+      text-decoration: none;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(0, 241, 221, 0.4);
+      transition: color 0.3s ease;
+    }
+
+    .share-link:hover { color: #d4af37; }
+
+    /* === CATEGORIE FILTER FILTERING === */
+    .category-filter {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: #e0e0e0;
+      padding: 0.6rem 1.4rem;
+      border-radius: 30px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: #d4af37;
+      color: #0f172a;
+      border-color: #d4af37;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
     }
 
     /* === GALLERY === */
+    .gallery-intro {
+      text-align: center;
+      color: #00f1dd;
+      text-shadow: 0 0 10px rgba(0, 241, 221, 0.4);
+      max-width: 1000px;
+      margin: 0 auto 2rem;
+      padding: 0 1rem;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
     .gallery {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 2.2rem;
-      padding: 2rem 5vw 4rem;
+      padding: 0 5vw 4rem;
       max-width: 1800px;
       margin: 0 auto;
     }
 
-    video {
-      width: 100%;
+    .video-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 14px;
-      background: #111;
-      box-shadow: 0 10px 35px rgba(0,0,0,0.7);
-      transition: 0.4s;
+      padding: 1rem;
+      transition: transform 0.3s ease, border-color 0.3s ease;
     }
 
-    video:hover { transform: translateY(-7px); }
+    .video-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(212, 175, 55, 0.5);
+    }
 
-    .gallery h2 {
+    video {
+      width: 100%;
+      border-radius: 10px;
+      background: #111;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    .video-card h2 {
       font-size: 1.1rem;
-      margin-top: 0.5rem;
-      margin-bottom: 1.5rem;
-      color: #ccc;
+      margin-top: 1rem;
+      color: #e2e8f0;
       font-weight: 500;
     }
 
-    /* === STEUN & SPONSOR STYLES === */
-    .support-section {
-      text-align: center;
-      padding: 5rem 1.5rem;
-      background: rgba(15, 23, 42, 0.45);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(212, 175, 55, 0.25);
-    }
-
-    .support-section h2 {
-      font-size: 1.8rem;
+    .category-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      background: rgba(212, 175, 55, 0.15);
+      color: #d4af37;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
       font-weight: 600;
-      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    /* === YOUTUBE SECTIE === */
+    .youtube-section {
+      text-align: center;
+      padding: 3rem 1rem;
+      background: rgba(15, 23, 42, 0.5);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .youtube-section h3 {
+      color: #00f1dd;
+      text-shadow: 0 0 10px rgba(0, 241, 221, 0.4);
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+    }
+
+    .yt-button {
+      display: inline-block;
       margin-bottom: 1.5rem;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-    }
-
-    .support-section h2 i {
-      color: #ef4444;
-      margin-left: 6px;
-    }
-
-    .support-logo-box {
-      margin-bottom: 2.5rem;
-    }
-    
-    .support-logo {
-      width: 130px;
-      height: auto;
-      opacity: 0.85;
-      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
-      transition: opacity 0.3s, transform 0.3s;
-    }
-    
-    .support-logo:hover {
-      opacity: 1;
-      transform: scale(1.03);
-    }
-    
-    .sponsor-container {
-      max-width: 800px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-    }
-
-    .sponsor-container a {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      padding: 1rem 2rem;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      color: #ffffff;
+      font-size: 1.1rem;
+      color: #ff4d4d;
       text-decoration: none;
       font-weight: 600;
-      font-size: 1.05rem;
-      text-shadow: none;
-      transition: all 0.25s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: color 0.2s;
     }
 
-    .sponsor-container a i {
-      color: #d4af37;
-      font-size: 1.2rem;
-    }
-
-    .sponsor-container a:hover { 
-      background: rgba(212, 175, 55, 0.1); 
-      border-color: #d4af37;
-      color: #d4af37;
-      transform: translateY(-4px);
-      box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
-    }
+    .yt-button:hover { color: #d4af37; }
 
     footer {
       text-align: center;
       color: cornsilk;
-      padding: 4rem 1rem 2rem;
-      opacity: 0.75;
-      background: rgba(65, 124, 190, 0.8);
+      padding: 3rem 1rem 2rem;
+      opacity: 0.85;
+      background: rgba(15, 23, 42, 0.95);
       border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    a {
-      color: #00f1dd;
-      text-shadow: 0 0 10px rgba(208, 241, 192, 0.5);
-    }
-    a:hover {
-      color: #d4af37;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- VOLLEDIG SAMENGEVOEGD EN GEÜPDATET MENU -->
+  <!-- TOP NAVIGATIE -->
   <nav class="top-nav">
     <div class="nav-container">
       <a href="index.html" class="logo">Thibault Polet<span> Gallerij</span></a>
@@ -310,7 +325,7 @@
         <span></span><span></span><span></span>
       </label>
 
-      <!-- DESKTOP MENU (Outdoor Vlogs is actief) -->
+      <!-- DESKTOP MENU -->
       <div class="nav-links">
         <a href="index.html">Gallerij</a>
         <a href="video.html" class="active">Outdoor Vlogs</a>
@@ -321,6 +336,7 @@
         <a href="https://www.instagram.com/polet_creations_/" target="_blank"><i class="fab fa-instagram"></i></a>
         <a href="https://www.tiktok.com/@polet_thibault" target="_blank"><i class="fab fa-tiktok"></i></a>
         <a href="https://www.facebook.com/polet.creations/" target="_blank"><i class="fab fa-facebook"></i></a>
+        <a href="https://www.youtube.com/@Outdoor_Vlogs_videoalbumHD" target="_blank"><i class="fab fa-youtube"></i></a>
       </div>
 
       <!-- MOBIEL MENU -->
@@ -333,69 +349,114 @@
           <a href="https://www.instagram.com/polet_creations_/" target="_blank"><i class="fab fa-instagram"></i></a>
           <a href="https://www.tiktok.com/@polet_thibault" target="_blank"><i class="fab fa-tiktok"></i></a>
           <a href="https://www.facebook.com/polet.creations/" target="_blank"><i class="fab fa-facebook"></i></a>
+          <a href="https://www.youtube.com/@Outdoor_Vlogs_videoalbumHD" target="_blank"><i class="fab fa-youtube"></i></a>
         </div>
       </div>
     </div>
   </nav>
 
+  <!-- HEADER -->
   <header>
     <h1>Outdoor Vlogs</h1>
-    <h2>Ontdek de prachtige natuur met mijn outdoor vlogs! en uitstap met de fiets. En ook andere AI-projecten!</h2>
-    <a href="https://www.facebook.com/sharer/sharer.php?u=https://spider1232.github.io/kunstwerk-thibaultp/" target="_blank">
-      Deel het ook aan je vrienden op Facebook 
+    <p class="header-sub">Ontdek de prachtige natuur met mijn outdoor vlogs en uitstappen met de fiets, plus mijn unieke AI-projecten!</p>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https://spider1232.github.io/kunstwerk-thibaultp/" target="_blank" class="share-link">
+      <i class="fab fa-facebook-f"></i> Deel het ook met je vrienden op Facebook 
     </a>
   </header>
 
   <!-- TIKTOK EMBED -->
-  <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@polet_thibault" data-unique-id="polet_thibault" data-embed-type="creator" style="max-width: 780px; min-width: 288px; margin: 0 auto 3rem;" > 
+  <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@polet_thibault" data-unique-id="polet_thibault" data-embed-type="creator" style="max-width: 780px; min-width: 288px; margin: 0 auto 3rem;"> 
     <section> <a target="_blank" href="https://www.tiktok.com/@polet_thibault?refer=creator_embed">@polet_thibault</a> </section> 
   </blockquote> 
   <script async src="https://www.tiktok.com/embed.js"></script>
-     
+
+  <!-- CATEGORIE FILTER KNOFFEN -->
+  <div class="category-filter">
+    <button class="filter-btn active" onclick="filterCategory('alle')">Alle Video's</button>
+    <button class="filter-btn" onclick="filterCategory('outdoor')">🌿 Outdoor Vlogs & Fiets</button>
+    <button class="filter-btn" onclick="filterCategory('ai')">🤖 AI-Projecten</button>
+  </div>
+
+  <p class="gallery-intro">Hier zijn enkele van mijn favoriete outdoor vlogs en AI-projecten die ik heb gemaakt. Klik op de video's om ze te bekijken en geniet ervan!</p>
+
   <!-- VIDEO GALLERY -->
   <main class="gallery">
-    <h2 style="text-align: center; color: #00f1dd; text-shadow: 0 0 10px rgba(208, 241, 192, 0.5); grid-column: 1 / -1; margin-bottom: 2rem;">Hier zijn enkele van mijn favoriete outdoor vlogs en AI-projecten die ik heb gemaakt. Klik op de video's om ze te bekijken en geniet van de prachtige natuur en creatieve projecten!</h2>
 
-    <div>
+    <!-- VIDEO 1: AI -->
+    <div class="video-card" data-category="ai">
+      <span class="category-badge">AI-Projecten</span>
       <video controls><source src="video/jelly.mp4" type="video/mp4"></video>
       <h2>Levende schilderij Jelly AI</h2>
     </div>
 
-    <div>
+    <!-- VIDEO 2: OUTDOOR -->
+    <div class="video-card" data-category="outdoor">
+      <span class="category-badge">Outdoor Vlogs & Fiets</span>
       <video controls><source src="video/Zeehonden.mp4" type="video/mp4"></video>
       <h2>Zeehonden in hun natuurlijk habitat</h2>
     </div>
 
-    <div>
+    <!-- VIDEO 3: AI -->
+    <div class="video-card" data-category="ai">
+      <span class="category-badge">AI-Projecten</span>
       <video controls><source src="video/Satelliet en vallende sterren.mp4" type="video/mp4"></video>
       <h2>Satelliet en vallende sterren</h2>
     </div>
 
-    <div>
+    <!-- VIDEO 4: OUTDOOR -->
+    <div class="video-card" data-category="outdoor">
+      <span class="category-badge">Outdoor Vlogs & Fiets</span>
       <video controls><source src="video/Het natuurgebied van De Hoge Dijken  (Geniet van deze korte geluid van het natuur ).mp4" type="video/mp4"></video>
       <h2>Het natuurgebied van De Hoge Dijken</h2>
     </div>
 
-    <div>
+    <!-- VIDEO 5: OUTDOOR -->
+    <div class="video-card" data-category="outdoor">
+      <span class="category-badge">Outdoor Vlogs & Fiets</span>
       <video controls><source src="video/expo middelkerke jurassic park .mp4" type="video/mp4"></video>
       <h2>Expo Middelkerke Jurassic Park</h2>
     </div>
+
   </main>
     
   <!-- YOUTUBE SECTIE -->
-  <section style="text-align: center; padding: 3rem 1rem;">
-    <h3 style="color: #00f1dd; text-shadow: 0 0 10px rgba(208, 241, 192, 0.5); margin-bottom: 1rem;">Beste video's op YouTube met meeste likes en bekeken</h3>
-    <a href="https://www.youtube.com/@Outdoor_Vlogs_videoalbumHD" target="_blank" style="display: inline-block; margin-bottom: 1.5rem; font-size: 1.2rem;">Visit @Outdoor_Vlogs_videoalbumHD! Youtube</a>
+  <section class="youtube-section">
+    <h3>Beste video's op YouTube met de meeste likes en weergaven</h3>
+    <a href="https://www.youtube.com/@Outdoor_Vlogs_videoalbumHD" target="_blank" class="yt-button">
+      <i class="fab fa-youtube"></i> Bezoek @Outdoor_Vlogs_videoalbumHD op YouTube
+    </a>
     <br>
-    <img src="images/Capture d’écran 2026-06-06 154330.png" alt="YouTube Stats" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+    <img src="images/Capture d’écran 2026-06-06 154330.png" alt="YouTube Stats" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);">
+  </section>
 
-
+  <!-- FOOTER -->
   <footer>
     <!-- BEGIN Free Counter Code! counter -->
     <script type="text/javascript" src="https://freecountercode.com/service/Zd6isTizLX2mAmlIiDt1"></script>
     <!-- END Free Counter Code! counter -->
     <p>© GITHUB 2026 — Thibault P (Polet Creations Creativiteit in elke lijn en vorm)</p>
   </footer>
+
+  <!-- SCRIPT VOOR HET FILTEREN -->
+  <script>
+    function filterCategory(category) {
+      const cards = document.querySelectorAll('.video-card');
+      const buttons = document.querySelectorAll('.filter-btn');
+
+      // Update actieve knop stijl
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Toon/verberg video kaarten
+      cards.forEach(card => {
+        if (category === 'alle' || card.getAttribute('data-category') === category) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  </script>
 
 </body>
 </html>
