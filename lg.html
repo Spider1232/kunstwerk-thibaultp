@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Thibault Polet Gallerij - Admin Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<!-- Tailwind CSS via CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          gold: '#f3d078',
+          darkBg: '#090a0f',
+          glassBg: 'rgba(255, 255, 255, 0.04)',
+          glassBorder: 'rgba(255, 255, 255, 0.12)',
+        },
+        fontFamily: {
+          cinzel: ['Cinzel', 'serif'],
+          sans: ['Inter', 'sans-serif'],
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+/* === CUSTOM GLASSMORPHISM & GENERAL STYLES === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #f1f5f9;
+  background: #090a0f;
+  background-image:
+    radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 50% 85%, rgba(212, 175, 55, 0.12) 0%, transparent 45%),
+    linear-gradient(to bottom, #07080c, #0b0d14);
+  background-attachment: fixed;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Blueprint grid overlay matching index.html */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Glass panel effect */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.glass-input {
+  background: rgba(15, 20, 32, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transition: all 0.25s ease;
+}
+.glass-input:focus {
+  outline: none;
+  border-color: #f3d078;
+  box-shadow: 0 0 15px rgba(243, 208, 120, 0.25);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgba(10, 14, 23, 0.5); }
+::-webkit-scrollbar-thumb { background: rgba(243, 208, 120, 0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(243, 208, 120, 0.6); }
+
+/* Pulse Animation */
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.8; }
+}
+.live-dot {
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+</style>
+</head>
+<body class="relative min-h-screen text-slate-100 flex flex-col justify-between">
+
+  <!-- LOGIN CONTAINER (AUTH GUARD) -->
+  <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-2xl">
+    <div class="glass-panel w-full max-w-md p-8 relative overflow-hidden text-center">
+      <!-- Glow effect -->
+      <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-500/20 rounded-full blur-2xl pointer-events-none"></div>
+      
+      <i class="fa-solid fa-user-shield text-5xl text-gold mb-4"></i>
+      <h1 class="font-cinzel text-2xl font-bold text-white mb-1">Beheerders Inloggen</h1>
+      <p class="text-xs text-slate-400 mb-6">Thibault Polet Gallerij Admin System</p>
+
+      <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4 text-left">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Gebruikersnaam</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-3 text-slate-400"><i class="fa-solid fa-user"></i></span>
+            <input type="text" id="username-input" required placeholder="admin" value="admin" class="glass-input w-full pl-10 pr-4 py-2.5 rounded-xl text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Wachtwoord</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-3 text-slate-400"><i class="fa-solid fa-lock"></i></span>
+            <input type="password" id="password-input" required placeholder="••••••••" value="admin123" class="glass-input w-full pl-10 pr-4 py-2.5 rounded-xl text-sm">
+          </div>
+        </div>
+
+        <div id="login-error" class="hidden text-rose-400 text-xs text-center p-2 rounded-lg bg-rose-500/10 border border-rose-500/20">
+          <i class="fa-solid fa-circle-exclamation mr-1"></i> Onjuiste inloggegevens.
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-yellow-500/80 to-amber-600/80 hover:from-yellow-500 hover:to-amber-600 border border-gold/40 text-slate-900 font-bold rounded-xl shadow-lg shadow-amber-500/20 transition hover:scale-[1.02] active:scale-[0.98]">
+          <i class="fa-solid fa-right-to-bracket mr-2"></i> Inloggen Dashboard
+        </button>
+      </form>
+      <p class="text-xs text-slate-500 mt-6">Standaard wachtwoord: <code class="text-gold">admin123</code></p>
+    </div>
+  </div>
+
+  <!-- MAIN ADMIN DASHBOARD CONTENT -->
+  <div id="app-dashboard" class="relative z-10 hidden flex-1 flex flex-col">
+    <!-- TOP NAVIGATION BAR -->
+    <header class="top-nav sticky top-0 z-40 bg-slate-950/60 backdrop-blur-xl border-b border-white/10 shadow-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <!-- Logo & Title -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-gold">
+            <i class="fa-solid fa-shield-halved text-xl"></i>
+          </div>
+          <div>
+            <a href="#" class="font-cinzel text-lg sm:text-xl font-bold text-white tracking-wider">Thibault Polet <span class="text-gold">Admin</span></a>
+            <p class="text-[10px] text-slate-400 hidden sm:block">Luxe Beheerderspaneel & Analytics</p>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation Tabs -->
+        <nav class="hidden md:flex items-center space-x-2 bg-slate-900/50 p-1.5 rounded-2xl border border-white/10">
+          <button onclick="switchTab('tab-stats')" id="nav-tab-stats" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium transition duration-200 flex items-center space-x-2 text-gold bg-gold/10 border border-gold/30">
+            <i class="fa-solid fa-chart-line"></i><span>Statistieken</span>
+          </button>
+          <button onclick="switchTab('tab-gallery')" id="nav-tab-gallery" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition duration-200 flex items-center space-x-2">
+            <i class="fa-solid fa-images"></i><span>Gallerij Beheer</span>
+          </button>
+          <button onclick="switchTab('tab-messages')" id="nav-tab-messages" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition duration-200 flex items-center space-x-2">
+            <i class="fa-solid fa-envelope"></i><span>Berichten & Sponsors</span>
+          </button>
+          <button onclick="switchTab('tab-settings')" id="nav-tab-settings" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition duration-200 flex items-center space-x-2">
+            <i class="fa-solid fa-code"></i><span>Code Export & Tooling</span>
+          </button>
+        </nav>
+
+        <!-- Right Side Actions -->
+        <div class="flex items-center space-x-3">
+          <a href="index.html" target="_blank" class="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-xs sm:text-sm font-medium text-slate-200 transition flex items-center gap-1.5" title="Bekijk Website">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i><span class="hidden sm:inline">Naar Website</span>
+          </a>
+          <button onclick="handleLogout()" class="px-3.5 py-2 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 hover:bg-rose-500/25 text-xs sm:text-sm font-semibold transition flex items-center gap-1.5">
+            <i class="fa-solid fa-power-off"></i><span class="hidden sm:inline">Uitloggen</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Sub-Menu Tabs -->
+      <div class="md:hidden flex overflow-x-auto px-4 py-2 border-t border-white/5 space-x-2 no-scrollbar">
+        <button onclick="switchTab('tab-stats')" id="mob-tab-stats" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium text-gold bg-gold/10 border border-gold/30">Statistieken</button>
+        <button onclick="switchTab('tab-gallery')" id="mob-tab-gallery" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 bg-white/5">Gallerij Beheer</button>
+        <button onclick="switchTab('tab-messages')" id="mob-tab-messages" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 bg-white/5">Berichten & Sponsors</button>
+        <button onclick="switchTab('tab-settings')" id="mob-tab-settings" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 bg-white/5">Code Export</button>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+
+      <!-- TAB 1: STATISTIEKEN & DASHBOARD OVERVIEW -->
+      <section id="tab-stats" class="tab-content space-y-6">
+        <!-- Live Visitor Header Banner -->
+        <div class="glass-panel p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span>
+              <span>LIVE SYSTEM MONITORING</span>
+            </div>
+            <h2 class="font-cinzel text-2xl font-bold text-white">Bezoekers & Analytics Overzicht</h2>
+            <p class="text-sm text-slate-400">Realtime statistieken van bezoekers op kunstwerk-thibaultp.github.io</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="toggleLiveSimulation()" id="sim-btn" class="px-4 py-2 rounded-xl bg-gold/15 border border-gold/40 text-gold hover:bg-gold/25 text-xs font-bold transition flex items-center gap-2">
+              <i class="fa-solid fa-arrows-rotate"></i> Live Simulatie Actief
+            </button>
+          </div>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="glass-panel p-5 relative overflow-hidden">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Totaal Bezoeken</p>
+                <h3 id="stat-total-visits" class="text-3xl font-bold text-white mt-2">14,289</h3>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
+                <i class="fa-solid fa-eye text-lg"></i>
+              </div>
+            </div>
+            <p class="text-xs text-emerald-400 mt-3 flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> +12% sinds vorige week</p>
+          </div>
+
+          <div class="glass-panel p-5 relative overflow-hidden">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Unieke Bezoekers Vandaag</p>
+                <h3 id="stat-unique-today" class="text-3xl font-bold text-gold mt-2">342</h3>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-gold flex items-center justify-center">
+                <i class="fa-solid fa-users text-lg"></i>
+              </div>
+            </div>
+            <p class="text-xs text-emerald-400 mt-3 flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> +8.5% t.o.v. gisteren</p>
+          </div>
+
+          <div class="glass-panel p-5 relative overflow-hidden">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Populairste Kunstwerk</p>
+                <h3 class="text-lg font-bold text-white mt-2 truncate max-w-[170px]">Wandel in de natuur</h3>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center">
+                <i class="fa-solid fa-heart text-lg"></i>
+              </div>
+            </div>
+            <p class="text-xs text-slate-400 mt-3">1,890 weergaven in lightbox</p>
+          </div>
+
+          <div class="glass-panel p-5 relative overflow-hidden">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-xs uppercase font-semibold text-slate-400 tracking-wider">Nu Actief op Site</p>
+                <h3 id="stat-active-now" class="text-3xl font-bold text-emerald-400 mt-2">14</h3>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <i class="fa-solid fa-bolt text-lg"></i>
+              </div>
+            </div>
+            <p class="text-xs text-slate-400 mt-3">Gemiddelde duur: 3m 42s</p>
+          </div>
+        </div>
+
+        <!-- Custom Graphical Analytics Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Chart 1: Bezoekers per Maand (Bar Graph) -->
+          <div class="glass-panel p-6 lg:col-span-2 flex flex-col justify-between">
+            <div class="flex justify-between items-center mb-6">
+              <div>
+                <h3 class="text-base font-bold text-white">Bezoekers Trend 2026</h3>
+                <p class="text-xs text-slate-400">Aantal bezoeken per maand</p>
+              </div>
+              <span class="text-xs bg-white/5 border border-white/10 px-3 py-1 rounded-full text-slate-300">Maandelijks</span>
+            </div>
+
+            <!-- Custom CSS Bar Graph -->
+            <div class="h-56 flex items-end justify-between gap-2 sm:gap-4 pt-6 pb-2 border-b border-white/10 px-2">
+              <div class="flex-1 flex flex-col items-center gap-2 group">
+                <div class="w-full bg-gold/20 rounded-t-md group-hover:bg-gold/40 transition-all relative" style="height: 45%;">
+                  <span class="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 -translate-x-1/2 bg-black text-gold text-[10px] px-2 py-0.5 rounded border border-gold/30">1,200</span>
+                </div>
+                <span class="text-[10px] sm:text-xs text-slate-400">Jan</span>
+              </div>
+              <div class="flex-1 flex flex-col items-center gap-2 group">
+                <div class="w-full bg-gold/20 rounded-t-md group-hover:bg-gold/40 transition-all relative" style="height: 55%;">
+                  <span class="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 -translate-x-1/2 bg-black text-gold text-[10px] px-2 py-0.5 rounded border border-gold/30">1,540</span>
+                </div>
+                <span class="text-[10px] sm:text-xs text-slate-400">Feb</span>
+              </div>
+              <div class="flex-1 flex flex-col items-center gap-2 group">
+                <div class="w-full bg-gold/80 rounded-t-md shadow-lg shadow-gold/20 transition-all relative" style="height: 85%;">
+                  <span class="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 -translate-x-1/2 bg-black text-gold text-[10px] px-2 py-0.5 rounded border border-gold/30">2,410</span>
+                </div>
+                <span class="text-[10px] sm:text-xs font-bold text-gold">Mrt</span>
+              </div>
+              <div class="flex-1 flex flex-col items-center gap-2 group">
+                <div class="w-full bg-gold/20 rounded-t-md group-hover:bg-gold/40 transition-all relative" style="height: 65%;">
+                  <span class="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 -translate-x-1/2 bg-black text-gold text-[10px] px-2 py-0.5 rounded border border-gold/30">1,890</span>
+                </div>
+                <span class="text-[10px] sm:text-xs text-slate-400">Apr</span>
+              </div>
+              <div class="flex-1 flex flex-col items-center gap-2 group">
+                <div class="w-full bg-gold/20 rounded-t-md group-hover:bg-gold/40 transition-all relative" style="height: 70%;">
+                  <span class="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 -translate-x-1/2 bg-black text-gold text-[10px] px-2 py-0.5 rounded border border-gold/30">2,050</span>
+                </div>
+                <span class="text-[10px] sm:text-xs text-slate-400">Mei</span>
+              </div>
+              <div class="flex-1 flex flex-col items-center gap-2 group">
+                <div class="w-full bg-gold/20 rounded-t-md group-hover:bg-gold/40 transition-all relative" style="height: 90%;">
+                  <span class="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 -translate-x-1/2 bg-black text-gold text-[10px] px-2 py-0.5 rounded border border-gold/30">2,600</span>
+                </div>
+                <span class="text-[10px] sm:text-xs text-slate-400">Jun</span>
+              </div>
+              <div class="flex-1 flex flex-col items-center gap-2 group">
+                <div class="w-full bg-gold/20 rounded-t-md group-hover:bg-gold/40 transition-all relative" style="height: 100%;">
+                  <span class="opacity-0 group-hover:opacity-100 absolute -top-7 left-1/2 -translate-x-1/2 bg-black text-gold text-[10px] px-2 py-0.5 rounded border border-gold/30">2,880</span>
+                </div>
+                <span class="text-[10px] sm:text-xs text-slate-400">Jul</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-xs text-slate-400 mt-4">
+              <span><i class="fa-solid fa-circle text-[8px] text-gold mr-1"></i> Bezoeken 2026</span>
+              <span>Totaal dit jaar: <strong>14,289</strong></span>
+            </div>
+          </div>
+
+          <!-- Chart 2: Apparaten & Verkeer (Traffic sources) -->
+          <div class="glass-panel p-6 flex flex-col justify-between">
+            <div>
+              <h3 class="text-base font-bold text-white mb-1">Apparaten & Verkeer</h3>
+              <p class="text-xs text-slate-400 mb-6">Hoe bezoekers de website bekijken</p>
+
+              <div class="space-y-4">
+                <div>
+                  <div class="flex justify-between text-xs text-slate-300 mb-1">
+                    <span><i class="fa-solid fa-mobile-screen text-amber-400 mr-2"></i> Mobiel (Smartphones)</span>
+                    <span class="font-bold">68%</span>
+                  </div>
+                  <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div class="h-full bg-amber-400 rounded-full" style="width: 68%;"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-xs text-slate-300 mb-1">
+                    <span><i class="fa-solid fa-desktop text-blue-400 mr-2"></i> Desktop & Laptop</span>
+                    <span class="font-bold">24%</span>
+                  </div>
+                  <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div class="h-full bg-blue-400 rounded-full" style="width: 24%;"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-xs text-slate-300 mb-1">
+                    <span><i class="fa-solid fa-tablet-screen-button text-purple-400 mr-2"></i> Tablets</span>
+                    <span class="font-bold">8%</span>
+                  </div>
+                  <div class="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div class="h-full bg-purple-400 rounded-full" style="width: 8%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-6 border-t border-white/10 mt-6">
+              <h4 class="text-xs font-semibold text-slate-300 mb-2 uppercase">Social Media Verkeer</h4>
+              <div class="flex items-center justify-between text-xs text-slate-400">
+                <span class="flex items-center gap-2"><i class="fa-brands fa-facebook text-blue-500"></i> Facebook Sharer</span>
+                <span class="font-semibold text-slate-200">54%</span>
+              </div>
+              <div class="flex items-center justify-between text-xs text-slate-400 mt-2">
+                <span class="flex items-center gap-2"><i class="fa-brands fa-instagram text-pink-500"></i> Instagram Bio Link</span>
+                <span class="font-semibold text-slate-200">31%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: GALLERIJ BEHEER & AFBEELDING TOEVOEGEN -->
+      <section id="tab-gallery" class="tab-content hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="font-cinzel text-2xl font-bold text-white">Gallerij Beheer</h2>
+            <p class="text-sm text-slate-400">Voeg nieuwe kunstwerken toe, bewerk of verwijder bestaande items.</p>
+          </div>
+          <button onclick="openAddModal()" class="px-4 py-2.5 rounded-xl bg-gold text-slate-950 font-bold hover:bg-amber-300 text-sm transition shadow-lg shadow-gold/20 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-plus"></i> Nieuw Kunstwerk Toevoegen
+          </button>
+        </div>
+
+        <!-- Filter and Search Bar -->
+        <div class="glass-panel p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
+          <div class="relative w-full sm:w-80">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+            <input type="text" id="search-gallery" onkeyup="filterGallery()" placeholder="Zoek op titel of jaar..." class="glass-input w-full pl-10 pr-4 py-2 rounded-xl text-sm">
+          </div>
+          <div class="flex gap-2 w-full sm:w-auto overflow-x-auto">
+            <button onclick="filterYear('ALL')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gold/20 text-gold border border-gold/30">Alles</button>
+            <button onclick="filterYear('2026')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:bg-white/10">2026</button>
+            <button onclick="filterYear('2025')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:bg-white/10">2025</button>
+            <button onclick="filterYear('2024')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:bg-white/10">2024</button>
+            <button onclick="filterYear('2023')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:bg-white/10">2023</button>
+            <button onclick="filterYear('2022')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 text-slate-300 hover:bg-white/10">2022</button>
+          </div>
+        </div>
+
+        <!-- Gallery Grid (Dynamic rendered in JS) -->
+        <div id="gallery-items-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <!-- Dynamisch opgevuld via JavaScript -->
+        </div>
+      </section>
+
+      <!-- TAB 3: BERICHTEN & SPONSORS -->
+      <section id="tab-messages" class="tab-content hidden space-y-6">
+        <div>
+          <h2 class="font-cinzel text-2xl font-bold text-white">Berichten & Sponsor Beheer</h2>
+          <p class="text-sm text-slate-400">Beheer binnengekomen reacties en bewerk partner- en sponsorlinks.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Left: Sponsor Links Management -->
+          <div class="glass-panel p-6 space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-white/10">
+              <h3 class="font-bold text-white flex items-center gap-2"><i class="fa-solid fa-hand-holding-heart text-gold"></i> Actieve Sponsors & Partners</h3>
+              <button onclick="addNewSponsor()" class="text-xs bg-white/10 hover:bg-white/20 text-slate-200 px-3 py-1.5 rounded-lg transition">+ Partner Toevoegen</button>
+            </div>
+
+            <div id="sponsor-list" class="space-y-3">
+              <!-- Default Sponsors -->
+              <div class="p-3 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 truncate">
+                  <i class="fa-solid fa-paw text-gold text-lg"></i>
+                  <div class="truncate">
+                    <p class="text-sm font-semibold text-white">Au bonheur des Anges Facebook</p>
+                    <p class="text-xs text-slate-400 truncate">https://www.facebook.com/profile.php?id=61567110585000</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button class="text-xs px-2.5 py-1 bg-rose-500/20 text-rose-300 rounded hover:bg-rose-500/40"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+
+              <div class="p-3 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 truncate">
+                  <i class="fa-solid fa-camera text-gold text-lg"></i>
+                  <div class="truncate">
+                    <p class="text-sm font-semibold text-white">Photo Design</p>
+                    <p class="text-xs text-slate-400 truncate">https://www.facebook.com/profile.php?id=100076190710949</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button class="text-xs px-2.5 py-1 bg-rose-500/20 text-rose-300 rounded hover:bg-rose-500/40"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+
+              <div class="p-3 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3 truncate">
+                  <i class="fa-solid fa-globe text-gold text-lg"></i>
+                  <div class="truncate">
+                    <p class="text-sm font-semibold text-white">Au bonheur des Anges Website</p>
+                    <p class="text-xs text-slate-400 truncate">https://www.aubonheurdesanges.be</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button class="text-xs px-2.5 py-1 bg-rose-500/20 text-rose-300 rounded hover:bg-rose-500/40"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Received Contact Messages -->
+          <div class="glass-panel p-6 space-y-4">
+            <h3 class="font-bold text-white pb-3 border-b border-white/10 flex items-center gap-2"><i class="fa-solid fa-envelope-open-text text-gold"></i> Binnengekomen Berichten</h3>
+            
+            <div class="space-y-3">
+              <div class="p-4 bg-white/5 border border-white/10 rounded-xl">
+                <div class="flex justify-between items-start mb-2">
+                  <div>
+                    <h4 class="text-sm font-bold text-white">Sophie Vandamme</h4>
+                    <p class="text-[11px] text-slate-400">sophie.v@example.com</p>
+                  </div>
+                  <span class="text-[10px] bg-gold/10 text-gold px-2 py-0.5 rounded border border-gold/20">Vandaag, 09:14</span>
+                </div>
+                <p class="text-xs text-slate-300">"Prachtig schilderij van de Cocker spaniel Jelly! Verkoopt u ook afdrukken op canvas?"</p>
+              </div>
+
+              <div class="p-4 bg-white/5 border border-white/10 rounded-xl opacity-75">
+                <div class="flex justify-between items-start mb-2">
+                  <div>
+                    <h4 class="text-sm font-bold text-white">Dierenasiel vzw</h4>
+                    <p class="text-[11px] text-slate-400">info@dierenasiel.be</p>
+                  </div>
+                  <span class="text-[10px] bg-white/10 text-slate-400 px-2 py-0.5 rounded">Gisteren</span>
+                </div>
+                <p class="text-xs text-slate-300">"Bedankt voor het plaatsen van onze sponsorlink op uw mooie website Thibault!"</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: CODE EXPORT & INSTELINGEN -->
+      <section id="tab-settings" class="tab-content hidden space-y-6">
+        <div>
+          <h2 class="font-cinzel text-2xl font-bold text-white">HTML Code Generator & Instellingen</h2>
+          <p class="text-sm text-slate-400">Genereer direct de HTML code voor de `index.html` of verander je admin wachtwoord.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Left: HTML Code Exporter -->
+          <div class="glass-panel p-6 lg:col-span-2 space-y-4">
+            <div class="flex justify-between items-center">
+              <h3 class="font-bold text-white flex items-center gap-2"><i class="fa-solid fa-code text-gold"></i> Gegenereerde HTML for `index.html`</h3>
+              <button onclick="copyGeneratedHTML()" class="px-3.5 py-1.5 rounded-lg bg-gold text-slate-950 font-bold text-xs hover:bg-amber-300 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-copy"></i> Kopiëren Code
+              </button>
+            </div>
+            <p class="text-xs text-slate-400">Kopieer deze code en plak het rechtstreeks in het `<main class="gallery">` gedeelte van je `index.html` bestand.</p>
+
+            <textarea id="generated-code-box" readonly class="w-full h-80 glass-input font-mono text-xs p-4 rounded-xl leading-relaxed select-all" spellcheck="false"></textarea>
+          </div>
+
+          <!-- Right: Change Admin Password & Data Reset -->
+          <div class="glass-panel p-6 space-y-6">
+            <div>
+              <h3 class="font-bold text-white mb-4 flex items-center gap-2"><i class="fa-solid fa-key text-gold"></i> Wachtwoord Wijzigen</h3>
+              <form onsubmit="changePassword(event)" class="space-y-3">
+                <div>
+                  <label class="block text-xs text-slate-300 mb-1">Nieuw Wachtwoord</label>
+                  <input type="password" id="new-password" required placeholder="Voer nieuw wachtwoord in" class="glass-input w-full px-3 py-2 rounded-xl text-sm">
+                </div>
+                <button type="submit" class="w-full py-2 bg-white/10 hover:bg-white/20 border border-white/15 text-slate-100 font-semibold rounded-xl text-xs transition">
+                  Wachtwoord Bijwerken
+                </button>
+              </form>
+            </div>
+
+            <div class="pt-6 border-t border-white/10">
+              <h3 class="font-bold text-white mb-2 text-rose-400 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> Admin Data Reset</h3>
+              <p class="text-xs text-slate-400 mb-4">Herstel de galerij naar de standaard kunstwerken van Thibault Polet.</p>
+              <button onclick="resetGalleryData()" class="w-full py-2 bg-rose-500/15 border border-rose-500/30 text-rose-300 hover:bg-rose-500/25 font-semibold rounded-xl text-xs transition">
+                Reset Naar Standaard Galerij
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/10 py-4 text-center text-xs text-slate-500">
+      <p>© 2026 Thibault Polet Gallerij — Beheerderspaneel v2.5</p>
+    </footer>
+  </div>
+
+  <!-- MODAL: KUNSTWERK TOEVOEGEN / BEWERKEN -->
+  <div id="artwork-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="glass-panel w-full max-w-lg p-6 relative overflow-hidden space-y-4">
+      <div class="flex justify-between items-center border-b border-white/10 pb-3">
+        <h3 id="modal-title" class="font-cinzel text-lg font-bold text-white">Nieuw Kunstwerk Toevoegen</h3>
+        <button onclick="closeArtworkModal()" class="text-slate-400 hover:text-white text-xl">&times;</button>
+      </div>
+
+      <form id="artwork-form" onsubmit="saveArtwork(event)" class="space-y-4">
+        <input type="hidden" id="artwork-id">
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Titel Kunstwerk</label>
+          <input type="text" id="art-title" required placeholder="bijv. Zonsondergang aan zee" class="glass-input w-full px-3.5 py-2 rounded-xl text-sm">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Jaar</label>
+            <input type="number" id="art-year" required min="2000" max="2030" value="2026" class="glass-input w-full px-3.5 py-2 rounded-xl text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Categorie / Label</label>
+            <input type="text" id="art-category" placeholder="bijv. Natuur / Hond / Cavia" class="glass-input w-full px-3.5 py-2 rounded-xl text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Afbeelding pad / URL</label>
+          <input type="text" id="art-image" required placeholder="images/mijn-foto.jpg of https://..." oninput="updateImagePreview()" class="glass-input w-full px-3.5 py-2 rounded-xl text-sm">
+          <p class="text-[11px] text-slate-400 mt-1">Typ bijvoorbeeld <code class="text-gold">images/landschap.jpg</code> of een externe URL.</p>
+        </div>
+
+        <!-- Preview Box -->
+        <div class="bg-black/40 border border-white/10 rounded-xl p-2 text-center h-36 flex items-center justify-center overflow-hidden">
+          <img id="image-preview" src="" alt="Preview" class="max-h-full object-contain hidden rounded">
+          <span id="preview-placeholder" class="text-xs text-slate-500"><i class="fa-regular fa-image text-2xl block mb-1"></i>Afbeeldingsvoorbeeld verschijnt hier</span>
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-3 border-t border-white/10">
+          <button type="button" onclick="closeArtworkModal()" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-slate-300 font-semibold transition">Annuleren</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-gold text-slate-950 font-bold text-xs hover:bg-amber-300 transition shadow-lg shadow-gold/20">Opslaan & Toevoegen</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // DEFAULT INITIAL GALLERY DATA
+    const defaultArtworks = [
+      { id: "img11", title: "Wandel in de natuur", year: "2026", image: "images/landschap.jpg", category: "Natuur" },
+      { id: "img0", title: "Zonsondergang in Stormkleuren", year: "2026", image: "images/Zonondergang.jpg", category: "Landschap" },
+      { id: "img6", title: "Kyra - Pekinees", year: "2025", image: "images/Kyra (202501102).jpg", category: "Dieren" },
+      { id: "img7", title: "Kasteel Vianden - Luxemburg", year: "2025", image: "images/Kasteel Vianden (20250312).jpg", category: "Architectuur" },
+      { id: "img5", title: "Lady - Cavia", year: "2025", image: "images/Lady (20250214).jpg", category: "Cavia's" },
+      { id: "img8", title: "Zicht aan zee - Belgische kust", year: "2024", image: "images/Zicht aan zee (20240312).jpg", category: "Zee" },
+      { id: "img9", title: "Mimie - Cavia", year: "2023", image: "images/Mimie (20230318).jpg", category: "Cavia's" },
+      { id: "img10", title: "Daisy-Bella - Cavia's", year: "2023", image: "images/Daisy-Bella (20230129).jpg", category: "Cavia's" },
+      { id: "img1", title: "Jelly Cocker spaniel", year: "2022", image: "images/Jelly (20221030121321).jpg", category: "Honden" },
+      { id: "img3", title: "Princesse - Cavia", year: "2022", image: "images/Princesse (20221013080117).jpg", category: "Cavia's" },
+      { id: "img2", title: "Théodore - Cavia", year: "2022", image: "images/Théodore (20221020050509).png", category: "Cavia's" },
+      { id: "img4", title: "Zonsondergang met zeilboot", year: "2022", image: "images/Project (20221027055049).jpg", category: "Kunst" }
+    ];
+
+    let artworks = JSON.parse(localStorage.getItem('tp_artworks')) || defaultArtworks;
+    let liveSimActive = true;
+    let simInterval = null;
+
+    // INITIALIZATION ON LOAD
+    window.onload = function() {
+      checkAuthStatus();
+      renderGalleryItems();
+      generateHTMLCode();
+      startVisitorSimulation();
+    };
+
+    // AUTHENTICATION LOGIC
+    function checkAuthStatus() {
+      const isAuth = localStorage.getItem('tp_admin_session');
+      if (isAuth === 'true') {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('app-dashboard').classList.remove('hidden');
+      } else {
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('app-dashboard').classList.add('hidden');
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('username-input').value.trim();
+      const pass = document.getElementById('password-input').value.trim();
+      const savedPass = localStorage.getItem('tp_admin_pass') || 'admin123';
+
+      if (user === 'admin' && pass === savedPass) {
+        localStorage.setItem('tp_admin_session', 'true');
+        document.getElementById('login-error').classList.add('hidden');
+        checkAuthStatus();
+      } else {
+        document.getElementById('login-error').classList.remove('hidden');
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('tp_admin_session');
+      checkAuthStatus();
+    }
+
+    function changePassword(e) {
+      e.preventDefault();
+      const newPass = document.getElementById('new-password').value.trim();
+      if (newPass.length < 4) {
+        alert("Het wachtwoord moet minimaal 4 tekens lang zijn.");
+        return;
+      }
+      localStorage.setItem('tp_admin_pass', newPass);
+      alert("Wachtwoord succesvol bijgewerkt!");
+      document.getElementById('new-password').value = '';
+    }
+
+    // TAB SWITCHING
+    function switchTab(tabId) {
+      // Hide all contents
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+
+      // Update Desktop Nav styles
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('text-gold', 'bg-gold/10', 'border', 'border-gold/30');
+        btn.classList.add('text-slate-300');
+      });
+      const activeDesktop = document.getElementById('nav-' + tabId);
+      if(activeDesktop) {
+        activeDesktop.classList.add('text-gold', 'bg-gold/10', 'border', 'border-gold/30');
+        activeDesktop.classList.remove('text-slate-300');
+      }
+
+      // Update Mobile Nav styles
+      document.querySelectorAll('[id^="mob-tab-"]').forEach(btn => {
+        btn.classList.remove('text-gold', 'bg-gold/10', 'border', 'border-gold/30');
+        btn.classList.add('text-slate-300', 'bg-white/5');
+      });
+      const activeMob = document.getElementById('mob-' + tabId);
+      if(activeMob) {
+        activeMob.classList.add('text-gold', 'bg-gold/10', 'border', 'border-gold/30');
+        activeMob.classList.remove('text-slate-300', 'bg-white/5');
+      }
+
+      if(tabId === 'tab-settings') {
+        generateHTMLCode();
+      }
+    }
+
+    // LIVE VISITOR SIMULATOR
+    function startVisitorSimulation() {
+      simInterval = setInterval(() => {
+        if(!liveSimActive) return;
+        const visitsEl = document.getElementById('stat-total-visits');
+        const activeEl = document.getElementById('stat-active-now');
+        
+        let visits = parseInt(visitsEl.innerText.replace(/,/g, ''));
+        visits += Math.floor(Math.random() * 2);
+        visitsEl.innerText = visits.toLocaleString();
+
+        let active = parseInt(activeEl.innerText);
+        let change = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
+        active = Math.max(8, Math.min(32, active + change));
+        activeEl.innerText = active;
+      }, 4000);
+    }
+
+    function toggleLiveSimulation() {
+      liveSimActive = !liveSimActive;
+      const btn = document.getElementById('sim-btn');
+      if(liveSimActive) {
+        btn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Live Simulatie Actief`;
+        btn.className = "px-4 py-2 rounded-xl bg-gold/15 border border-gold/40 text-gold hover:bg-gold/25 text-xs font-bold transition flex items-center gap-2";
+      } else {
+        btn.innerHTML = `<i class="fa-solid fa-pause"></i> Simulatie Gepauzeerd`;
+        btn.className = "px-4 py-2 rounded-xl bg-white/10 border border-white/20 text-slate-300 hover:bg-white/15 text-xs font-bold transition flex items-center gap-2";
+      }
+    }
+
+    // RENDER GALLERY ITEMS
+    function renderGalleryItems(itemsToRender = artworks) {
+      const container = document.getElementById('gallery-items-grid');
+      container.innerHTML = '';
+
+      if (itemsToRender.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">Geen kunstwerken gevonden.</div>`;
+        return;
+      }
+
+      itemsToRender.forEach(art => {
+        const card = document.createElement('div');
+        card.className = "glass-panel p-4 flex flex-col justify-between group hover:border-gold/50 transition duration-300";
+        card.innerHTML = `
+          <div>
+            <div class="relative w-full aspect-square rounded-xl overflow-hidden bg-black/40 mb-3 border border-white/10">
+              <img src="${art.image}" alt="${art.title}" onerror="this.src='https://placehold.co/400x300/1e293b/f3d078?text=Afbeelding+Pad'" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <span class="absolute top-2 right-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-black/60 backdrop-blur border border-gold/30 text-gold">${art.year}</span>
+            </div>
+            <h3 class="font-semibold text-white text-sm line-clamp-1">${art.title}</h3>
+            <p class="text-xs text-slate-400 mt-0.5 mb-3"><i class="fa-solid fa-tag text-[10px] text-gold/70 mr-1"></i> ${art.category || 'Gallerij'}</p>
+          </div>
+          <div class="flex items-center gap-2 pt-2 border-t border-white/10">
+            <button onclick="editArtwork('${art.id}')" class="flex-1 py-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-200 text-xs font-semibold transition flex items-center justify-center gap-1">
+              <i class="fa-solid fa-pen-to-square"></i> Bewerken
+            </button>
+            <button onclick="deleteArtwork('${art.id}')" class="py-1.5 px-3 rounded-lg bg-rose-500/15 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold transition">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // GALLERY MODAL CONTROL
+    function openAddModal() {
+      document.getElementById('artwork-id').value = '';
+      document.getElementById('art-title').value = '';
+      document.getElementById('art-year').value = '2026';
+      document.getElementById('art-category').value = '';
+      document.getElementById('art-image').value = '';
+      document.getElementById('modal-title').innerText = 'Nieuw Kunstwerk Toevoegen';
+      updateImagePreview();
+      document.getElementById('artwork-modal').classList.remove('hidden');
+    }
+
+    function closeArtworkModal() {
+      document.getElementById('artwork-modal').classList.add('hidden');
+    }
+
+    function updateImagePreview() {
+      const url = document.getElementById('art-image').value.trim();
+      const img = document.getElementById('image-preview');
+      const placeholder = document.getElementById('preview-placeholder');
+
+      if (url) {
+        img.src = url;
+        img.onerror = () => {
+          img.classList.add('hidden');
+          placeholder.classList.remove('hidden');
+        };
+        img.onload = () => {
+          img.classList.remove('hidden');
+          placeholder.classList.add('hidden');
+        };
+      } else {
+        img.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+      }
+    }
+
+    function saveArtwork(e) {
+      e.preventDefault();
+      const id = document.getElementById('artwork-id').value;
+      const title = document.getElementById('art-title').value.trim();
+      const year = document.getElementById('art-year').value.trim();
+      const category = document.getElementById('art-category').value.trim() || 'Kunst';
+      const image = document.getElementById('art-image').value.trim();
+
+      if (id) {
+        // Edit existing
+        const index = artworks.findIndex(a => a.id === id);
+        if (index !== -1) {
+          artworks[index] = { id, title, year, category, image };
+        }
+      } else {
+        // Add new
+        const newId = 'img' + Date.now().toString().slice(-4);
+        artworks.unshift({ id: newId, title, year, category, image });
+      }
+
+      localStorage.setItem('tp_artworks', JSON.stringify(artworks));
+      renderGalleryItems();
+      generateHTMLCode();
+      closeArtworkModal();
+    }
+
+    function editArtwork(id) {
+      const art = artworks.find(a => a.id === id);
+      if (!art) return;
+
+      document.getElementById('artwork-id').value = art.id;
+      document.getElementById('art-title').value = art.title;
+      document.getElementById('art-year').value = art.year;
+      document.getElementById('art-category').value = art.category || '';
+      document.getElementById('art-image').value = art.image;
+      document.getElementById('modal-title').innerText = 'Kunstwerk Bewerken';
+      updateImagePreview();
+      document.getElementById('artwork-modal').classList.remove('hidden');
+    }
+
+    function deleteArtwork(id) {
+      if (confirm("Weet je zeker dat je dit kunstwerk wilt verwijderen?")) {
+        artworks = artworks.filter(a => a.id !== id);
+        localStorage.setItem('tp_artworks', JSON.stringify(artworks));
+        renderGalleryItems();
+        generateHTMLCode();
+      }
+    }
+
+    function resetGalleryData() {
+      if (confirm("Hiermee herstel je de galerij naar de originele instellingen. Doorgaan?")) {
+        artworks = defaultArtworks;
+        localStorage.setItem('tp_artworks', JSON.stringify(artworks));
+        renderGalleryItems();
+        generateHTMLCode();
+        alert("Galerij hersteld!");
+      }
+    }
+
+    // SEARCH & FILTER
+    function filterGallery() {
+      const query = document.getElementById('search-gallery').value.toLowerCase();
+      const filtered = artworks.filter(art => 
+        art.title.toLowerCase().includes(query) || 
+        art.year.includes(query) || 
+        (art.category && art.category.toLowerCase().includes(query))
+      );
+      renderGalleryItems(filtered);
+    }
+
+    function filterYear(year) {
+      if (year === 'ALL') {
+        renderGalleryItems(artworks);
+      } else {
+        const filtered = artworks.filter(art => art.year === year);
+        renderGalleryItems(filtered);
+      }
+    }
+
+    // GENERATE INDEX.HTML COMPATIBLE CODE
+    function generateHTMLCode() {
+      let code = `<main class="gallery">\n`;
+      artworks.forEach(art => {
+        code += `  <figure>\n`;
+        code += `    <span class="year-badge">${art.year}</span>\n`;
+        code += `    <div class="img-wrapper">\n`;
+        code += `      <a href="#${art.id}"><img src="${art.image}" alt="${art.title}" loading="lazy"></a>\n`;
+        code += `    </div>\n`;
+        code += `    <figcaption><i class="fa-regular fa-image"></i> ${art.title}</figcaption>\n`;
+        code += `  </figure>\n`;
+      });
+      code += `</main>\n\n<!-- Lightbox Modal Definitions -->\n`;
+      artworks.forEach(art => {
+        code += `<div class="lightbox" id="${art.id}"><a href="#" class="close">×</a><img src="${art.image}" alt="${art.title}"></div>\n`;
+      });
+
+      const box = document.getElementById('generated-code-box');
+      if (box) box.value = code;
+    }
+
+    function copyGeneratedHTML() {
+      const box = document.getElementById('generated-code-box');
+      box.select();
+      document.execCommand('copy');
+      alert("De HTML code is gekopieerd naar je klembord!");
+    }
+
+    function addNewSponsor() {
+      const name = prompt("Naam van de partner/sponsor:");
+      const url = prompt("URL link naar de partner:");
+      if (name && url) {
+        const list = document.getElementById('sponsor-list');
+        const div = document.createElement('div');
+        div.className = "p-3 bg-white/5 border border-white/10 rounded-xl flex items-center justify-between gap-3";
+        div.innerHTML = `
+          <div class="flex items-center gap-3 truncate">
+            <i class="fa-solid fa-handshake text-gold text-lg"></i>
+            <div class="truncate">
+              <p class="text-sm font-semibold text-white">${name}</p>
+              <p class="text-xs text-slate-400 truncate">${url}</p>
+            </div>
+          </div>
+          <button onclick="this.parentElement.remove()" class="text-xs px-2.5 py-1 bg-rose-500/20 text-rose-300 rounded hover:bg-rose-500/40"><i class="fa-solid fa-trash"></i></button>
+        `;
+        list.appendChild(div);
+      }
+    }
+  </script>
+</body>
+</html>
