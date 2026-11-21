@@ -3,336 +3,387 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HTML Editor &amp; Admin Tool</title>
+  <title>Admin Editor (Test) — Thibault Polet Gallerij</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: #0f172a;
+      font-family: 'Inter', sans-serif;
+      background: #090a0f;
       color: #f1f5f9;
-      padding: 1rem;
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 30%, rgba(212, 175, 55, 0.12) 0%, transparent 45%);
     }
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      align-items: center;
-      background: #1e293b;
-      padding: 0.75rem 1rem;
-      border-radius: 10px;
-      margin-bottom: 1rem;
-      border: 1px solid rgba(255,255,255,0.1);
+    .container { max-width: 1100px; margin: 0 auto; }
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
-    .toolbar h1 {
-      font-size: 1.05rem;
+    header h1 {
+      font-family: 'Cinzel', serif;
       color: #f3d078;
-      margin-right: auto;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
     }
-    button, .file-label {
-      background: #334155;
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.15);
-      padding: 0.5rem 0.85rem;
-      border-radius: 7px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    button:hover, .file-label:hover {
-      background: #475569;
-      border-color: #f3d078;
-    }
-    .primary {
-      background: #d4af37;
-      color: #0f172a;
-      border-color: #d4af37;
-    }
-    .primary:hover {
-      background: #f3d078;
-    }
-    #msg {
-      width: 100%;
-      font-size: 0.85rem;
-      color: #86efac;
-      margin-top: 0.25rem;
-    }
+    header p { color: #94a3b8; font-size: 0.95rem; }
+
     .grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
     }
-    @media (max-width: 900px) {
-      .grid { grid-template-columns: 1fr; }
+    .card {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      padding: 1.5rem;
+      backdrop-filter: blur(14px);
     }
-    .box {
-      background: #1e293b;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
-      padding: 1rem;
-    }
-    .box h2 {
-      font-size: 0.95rem;
+    .card h2 {
+      font-size: 1.15rem;
       color: #f3d078;
-      margin-bottom: 0.75rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     label {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: #cbd5e1;
-      margin-top: 0.6rem;
-      margin-bottom: 0.25rem;
+      margin: 0.85rem 0 0.35rem;
+      font-weight: 500;
     }
-    input[type="text"], textarea {
+    input[type="text"], input[type="number"], select, textarea {
       width: 100%;
-      background: #090d16;
-      color: #f8fafc;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
       border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 7px;
-      padding: 0.55rem 0.7rem;
-      font-size: 0.88rem;
+      background: rgba(9, 10, 15, 0.85);
+      color: #ffffff;
       font-family: inherit;
+      font-size: 0.92rem;
     }
-    textarea#codeEditor {
-      min-height: 460px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.8rem;
-      line-height: 1.45;
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #f3d078;
     }
-    .preview-frame {
-      width: 100%;
-      min-height: 460px;
-      background: #fff;
-      border-radius: 7px;
-      border: 1px solid rgba(255,255,255,0.15);
+    .hint {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-top: 0.25rem;
     }
-    .row-actions {
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 1rem;
+    }
+    .btn-gold { background: #f3d078; color: #090a0f; }
+    .btn-gold:hover { background: #ffd97d; transform: translateY(-1px); }
+    .btn-blue { background: rgba(59, 130, 246, 0.25); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.4); }
+    .btn-blue:hover { background: rgba(59, 130, 246, 0.4); }
+    .btn-danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.35); padding: 0.4rem 0.7rem; margin-top: 0; font-size: 0.8rem; }
+
+    .queue-list {
       display: flex;
-      gap: 0.5rem;
+      flex-direction: column;
+      gap: 0.65rem;
       margin-top: 0.75rem;
-      flex-wrap: wrap;
+    }
+    .queue-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+    }
+    .badge {
+      font-size: 0.72rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      background: rgba(243, 208, 120, 0.18);
+      color: #f3d078;
+      margin-right: 8px;
+      font-weight: 600;
+    }
+    pre {
+      background: #05070c;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 0.8rem;
+      color: #e2e8f0;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      margin-top: 0.75rem;
+      max-height: 260px;
+    }
+    .status-bar {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: #34d399;
+    }
+    .file-box {
+      border: 1px dashed rgba(243, 208, 120, 0.4);
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgba(243, 208, 120, 0.04);
+      margin-top: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <div class="toolbar">
-    <h1>HTML Admin Tool</h1>
+  <div class="container">
+    <header>
+      <h1><i class="fa-solid fa-sliders"></i> Admin Editor (Testmodus) — Thibault Polet</h1>
+      <p>Direct testen zonder inloggen: voeg foto's of video's toe en genereer code of een bijgewerkte <code>index.html</code>.</p>
+    </header>
 
-    <label class="file-label">
-      Open .html bestand
-      <input type="file" id="openFile" accept=".html,.htm,text/html" style="display:none" />
-    </label>
+    <div class="grid">
+      <!-- FOTO TOEVOEGEN -->
+      <div class="card">
+        <h2><i class="fa-regular fa-image"></i> Nieuwe Foto Toevoegen</h2>
+        <label for="photo-title">Titel / Bijschrift</label>
+        <input type="text" id="photo-title" placeholder="Bijv. Zonsondergang in Oostende">
 
-    <button type="button" onclick="refreshPreview()">Voorbeeld verversen</button>
-    <button type="button" onclick="openInNewTab()">Open in nieuw tabblad</button>
-    <button type="button" onclick="copyCode()">Kopieer HTML</button>
-    <button type="button" class="primary" onclick="saveFile()">Download .html</button>
+        <label for="photo-year">Jaar</label>
+        <input type="number" id="photo-year" value="2026">
 
-    <div id="msg">Klaar. Laad een .html bestand of pas de code/velden hieronder aan.</div>
-  </div>
+        <label for="photo-file">Bestandsnaam in map <code>images/</code></label>
+        <input type="text" id="photo-file" placeholder="Bijv. oostende-2026.jpg">
+        <div class="hint">Zorg dat dit bestand ook in je map <code>images/</code> op GitHub staat.</div>
 
-  <div class="grid">
-    <div class="box">
-      <h2>Snelle aanpassingen</h2>
+        <label for="photo-id">Unieke Lightbox ID</label>
+        <input type="text" id="photo-id" value="img12">
+        <div class="hint">Je huidige index.html gebruikt t/m <code>img11</code>[span_1](start_span)[span_1](end_span).</div>
 
-      <label for="pageTitle">Paginatitel (&lt;title&gt;)</label>
-      <input type="text" id="pageTitle" oninput="updateTitleInCode()" />
-
-      <label for="findText">Tekst zoeken in HTML</label>
-      <input type="text" id="findText" placeholder="Bijv. Outdoor Vlogs" />
-
-      <label for="replaceText">Vervangen door</label>
-      <input type="text" id="replaceText" placeholder="Bijv. Mijn Vlogs" />
-
-      <div class="row-actions">
-        <button type="button" onclick="replaceFirst()">Vervang eerste</button>
-        <button type="button" onclick="replaceAllMatches()">Vervang alles</button>
+        <button class="btn btn-gold" onclick="addPhoto()"><i class="fa-solid fa-plus"></i> Foto toevoegen aan lijst</button>
       </div>
 
-      <label for="codeEditor" style="margin-top:1rem;">HTML-broncode</label>
-      <textarea id="codeEditor" oninput="refreshPreview(); syncTitleFromCode();"></textarea>
+      <!-- VIDEO TOEVOEGEN -->
+      <div class="card">
+        <h2><i class="fa-solid fa-video"></i> Nieuwe Video Toevoegen</h2>
+        <label for="video-title">Videotitel</label>
+        <input type="text" id="video-title" placeholder="Bijv. Fietstocht langs de kust">
+
+        <label for="video-cat">Categorie</label>
+        <select id="video-cat">
+          <option value="outdoor">Outdoor Vlogs &amp; Fiets</option>
+          <option value="ai">AI-Projecten</option>
+        </select>
+
+        <label for="video-file">Bestandsnaam in map <code>video/</code></label>
+        <input type="text" id="video-file" placeholder="Bijv. kustroute.mp4">
+        <div class="hint">Zorg dat dit <code>.mp4</code>-bestand in je map <code>video/</code> staat.</div>
+
+        <button class="btn btn-gold" onclick="addVideo()"><i class="fa-solid fa-plus"></i> Video toevoegen aan lijst</button>
+      </div>
     </div>
 
-    <div class="box">
-      <h2>Live voorbeeld</h2>
-      <iframe id="preview" class="preview-frame"></iframe>
+    <!-- WACHTLIJST -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <h2><i class="fa-solid fa-list-check"></i> Toegevoegde Items (<span id="item-count">0</span>)</h2>
+      <div id="queue-list" class="queue-list">
+        <p class="hint">Nog geen nieuwe foto's of video's toegevoegd.</p>
+      </div>
+    </div>
+
+    <!-- OPTIE 1: AUTOMATISCH INVOEGEN IN INDEX.HTML -->
+    <div class="card" style="margin-bottom: 1.5rem;">
+      <h2><i class="fa-solid fa-file-code"></i> Optie 1: Direct je <code>index.html</code> bijwerken &amp; downloaden</h2>
+      <p class="hint">Selecteer je bestaande <code>index.html</code>. Alle toegevoegde foto's en video's worden bovenaan de galerij en videolijst ingevoegd.</p>
+      <div class="file-box">
+        <input type="file" id="index-upload" accept=".html">
+      </div>
+      <button class="btn btn-gold" onclick="downloadUpdatedIndex()"><i class="fa-solid fa-download"></i> Download bijgewerkte index.html</button>
+      <div id="download-status" class="status-bar"></div>
+    </div>
+
+    <!-- OPTIE 2: HANDMATIG KOPIËREN -->
+    <div class="card">
+      <h2><i class="fa-solid fa-code"></i> Optie 2: Losse HTML-code kopiëren</h2>
+      <p class="hint">Gebruik deze codeblokken als je liever handmatig plakt in je <code>index.html</code>.</p>
+
+      <label>1. Foto-kaartjes (plak direct na <code>&lt;main class="gallery"&gt;</code>)</label>
+      <pre id="out-gallery">&lt;!-- Nog geen foto's toegevoegd --&gt;</pre>
+      <button class="btn btn-blue" onclick="copyCode('out-gallery')"><i class="fa-regular fa-copy"></i> Kopieer foto-code</button>
+
+      <label>2. Lightboxes (plak direct na <code>&lt;!-- LIGHTBOXES --&gt;</code>)</label>
+      <pre id="out-lightbox">&lt;!-- Nog geen lightboxes toegevoegd --&gt;</pre>
+      <button class="btn btn-blue" onclick="copyCode('out-lightbox')"><i class="fa-regular fa-copy"></i> Kopieer lightbox-code</button>
+
+      <label>3. Video-kaartjes (plak in <code>#page-video</code> direct na <code>&lt;main class="gallery"&gt;</code>)</label>
+      <pre id="out-video">&lt;!-- Nog geen video's toegevoegd --&gt;</pre>
+      <button class="btn btn-blue" onclick="copyCode('out-video')"><i class="fa-regular fa-copy"></i> Kopieer video-code</button>
     </div>
   </div>
 
   <script>
-    const starterHtml = `<!DOCTYPE html>
-<html lang="nl">
-<head>
-  <meta charset="UTF-8" />
-  <title>Mijn Pagina</title>
-  <style>
-    body { font-family: sans-serif; background: #111827; color: #f8fafc; padding: 2rem; }
-    nav a { color: #f3d078; margin-right: 1rem; text-decoration: none; cursor: pointer; }
-    section { display: none; margin-top: 1.5rem; }
-    section.active { display: block; }
-  </style>
-</head>
-<body>
-  <nav>
-    <a onclick="showSec('home')">Home</a>
-    <a onclick="showSec('vlogs')">Outdoor Vlogs</a>
-    <a onclick="showSec('about')">Over mij</a>
-  </nav>
+    const items = [];
+    let nextImgNumber = 12;
 
-  <section id="sec-home" class="active">
-    <h1>Welkom</h1>
-    <p>Startpagina inhoud.</p>
-  </section>
-
-  <section id="sec-vlogs">
-    <h1>Outdoor Vlogs</h1>
-    <p>Videopagina inhoud.</p>
-  </section>
-
-  <section id="sec-about">
-    <h1>Over mij</h1>
-    <p>Over mij inhoud.</p>
-  </section>
-
-  <script>
-    function showSec(name) {
-      document.querySelectorAll('section').forEach(function(el) { el.classList.remove('active'); });
-      var target = document.getElementById('sec-' + name);
-      if (target) target.classList.add('active');
-    }
-  <\/script>
-</body>
-</html>`;
-
-    const editor = document.getElementById('codeEditor');
-    const preview = document.getElementById('preview');
-    const msg = document.getElementById('msg');
-    const titleInput = document.getElementById('pageTitle');
-
-    function setMsg(text, isError) {
-      msg.textContent = text;
-      msg.style.color = isError ? '#fca5a5' : '#86efac';
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
     }
 
-    function refreshPreview() {
-      try {
-        const doc = preview.contentDocument || preview.contentWindow.document;
-        doc.open();
-        doc.write(editor.value);
-        doc.close();
-        setMsg('Voorbeeld bijgewerkt om ' + new Date().toLocaleTimeString(), false);
-      } catch (err) {
-        setMsg('Kon voorbeeld niet bijwerken: ' + err.message, true);
-      }
-    }
+    function addPhoto() {
+      const title = document.getElementById('photo-title').value.trim();
+      const year = document.getElementById('photo-year').value.trim() || '2026';
+      const file = document.getElementById('photo-file').value.trim();
+      const id = document.getElementById('photo-id').value.trim() || ('img' + nextImgNumber);
 
-    function syncTitleFromCode() {
-      const match = editor.value.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
-      titleInput.value = match ? match[1].trim() : '';
-    }
-
-    function updateTitleInCode() {
-      const newTitle = titleInput.value;
-      if (/<title[^>]*>[\s\S]*?<\/title>/i.test(editor.value)) {
-        editor.value = editor.value.replace(/<title[^>]*>[\s\S]*?<\/title>/i, '<title>' + newTitle + '</title>');
-      } else if (/<head[^>]*>/i.test(editor.value)) {
-        editor.value = editor.value.replace(/<head([^>]*)>/i, '<head$1>\n  <title>' + newTitle + '</title>');
-      }
-      refreshPreview();
-    }
-
-    function replaceFirst() {
-      const findVal = document.getElementById('findText').value;
-      const repVal = document.getElementById('replaceText').value;
-      if (!findVal) {
-        setMsg('Vul eerst een zoektekst in.', true);
+      if (!title || !file) {
+        alert('Vul zowel een titel als een bestandsnaam in.');
         return;
       }
-      if (!editor.value.includes(findVal)) {
-        setMsg('Tekst niet gevonden in de HTML.', true);
-        return;
-      }
-      editor.value = editor.value.replace(findVal, repVal);
-      syncTitleFromCode();
-      refreshPreview();
-      setMsg('Eerste overeenkomst vervangen.', false);
+
+      items.push({ type: 'photo', title, year, file, id });
+      nextImgNumber++;
+      document.getElementById('photo-title').value = '';
+      document.getElementById('photo-file').value = '';
+      document.getElementById('photo-id').value = 'img' + nextImgNumber;
+      render();
     }
 
-    function replaceAllMatches() {
-      const findVal = document.getElementById('findText').value;
-      const repVal = document.getElementById('replaceText').value;
-      if (!findVal) {
-        setMsg('Vul eerst een zoektekst in.', true);
+    function addVideo() {
+      const title = document.getElementById('video-title').value.trim();
+      const cat = document.getElementById('video-cat').value;
+      const file = document.getElementById('video-file').value.trim();
+
+      if (!title || !file) {
+        alert('Vul zowel een videotitel als een bestandsnaam in.');
         return;
       }
-      const parts = editor.value.split(findVal);
-      if (parts.length === 1) {
-        setMsg('Tekst niet gevonden in de HTML.', true);
-        return;
-      }
-      editor.value = parts.join(repVal);
-      syncTitleFromCode();
-      refreshPreview();
-      setMsg((parts.length - 1) + ' overeenkomsten vervangen.', false);
+
+      items.push({ type: 'video', title, cat, file });
+      document.getElementById('video-title').value = '';
+      document.getElementById('video-file').value = '';
+      render();
     }
 
-    function openInNewTab() {
-      const blob = new Blob([editor.value], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-      setMsg('Geopend in nieuw tabblad.', false);
+    function removeItem(index) {
+      items.splice(index, 1);
+      render();
     }
 
-    function copyCode() {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(editor.value)
-          .then(function() { setMsg('HTML gekopieerd naar klembord.', false); })
-          .catch(function() { fallbackCopy(); });
+    function buildSnippets() {
+      const photos = items.filter(i => i.type === 'photo');
+      const videos = items.filter(i => i.type === 'video');
+
+      const galleryHtml = photos.map(p => `      <figure>
+        <span class="year-badge">${escapeHtml(p.year)}</span>
+        <div class="img-wrapper">
+          <a href="#${escapeHtml(p.id)}" onclick="openLightbox('${escapeHtml(p.id)}'); return false;"><img src="images/${escapeHtml(p.file)}" alt="${escapeHtml(p.title)}" loading="lazy"></a>
+        </div>
+        <figcaption><i class="fa-regular fa-image"></i> ${escapeHtml(p.title)}</figcaption>
+      </figure>`).join('\n\n');
+
+      const lightboxHtml = photos.map(p => `    <div class="lightbox" id="${escapeHtml(p.id)}" onclick="closeLightbox(event, '${escapeHtml(p.id)}')"><a href="#_" onclick="closeLightbox(event, '${escapeHtml(p.id)}'); return false;" class="close">×</a><img src="images/${escapeHtml(p.file)}" alt="${escapeHtml(p.title)}"></div>`).join('\n');
+
+      const videoHtml = videos.map(v => {
+        const badgeText = v.cat === 'ai' ? 'AI-Projecten' : 'Outdoor Vlogs & Fiets';
+        return `      <div class="video-card" data-category="${escapeHtml(v.cat)}">
+        <span class="category-badge">${badgeText}</span>
+        <video controls><source src="video/${escapeHtml(v.file)}" type="video/mp4"></video>
+        <h2>${escapeHtml(v.title)}</h2>
+      </div>`;
+      }).join('\n\n');
+
+      return { galleryHtml, lightboxHtml, videoHtml };
+    }
+
+    function render() {
+      const list = document.getElementById('queue-list');
+      document.getElementById('item-count').textContent = items.length;
+
+      if (items.length === 0) {
+        list.innerHTML = '<p class="hint">Nog geen nieuwe foto\'s of video\'s toegevoegd.</p>';
       } else {
-        fallbackCopy();
+        list.innerHTML = items.map((item, idx) => {
+          const label = item.type === 'photo'
+            ? `<span class="badge">FOTO (${escapeHtml(item.year)})</span> ${escapeHtml(item.title)} — <code>images/${escapeHtml(item.file)}</code>`
+            : `<span class="badge">VIDEO (${item.cat.toUpperCase()})</span> ${escapeHtml(item.title)} — <code>video/${escapeHtml(item.file)}</code>`;
+          return `<div class="queue-item"><div>${label}</div><button class="btn btn-danger" onclick="removeItem(${idx})">Verwijder</button></div>`;
+        }).join('');
       }
+
+      const { galleryHtml, lightboxHtml, videoHtml } = buildSnippets();
+      document.getElementById('out-gallery').textContent = galleryHtml || '<!-- Nog geen foto\'s toegevoegd -->';
+      document.getElementById('out-lightbox').textContent = lightboxHtml || '<!-- Nog geen lightboxes toegevoegd -->';
+      document.getElementById('out-video').textContent = videoHtml || '<!-- Nog geen video\'s toegevoegd -->';
     }
 
-    function fallbackCopy() {
-      editor.select();
-      document.execCommand('copy');
-      setMsg('HTML gekopieerd naar klembord.', false);
+    function copyCode(elementId) {
+      const text = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Code gekopieerd naar klembord!');
+      });
     }
 
-    function saveFile() {
-      const blob = new Blob([editor.value], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'index.html';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      setMsg('Bestand index.html gedownload.', false);
-    }
+    function downloadUpdatedIndex() {
+      const fileInput = document.getElementById('index-upload');
+      const status = document.getElementById('download-status');
 
-    document.getElementById('openFile').addEventListener('change', function(e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
+      if (!fileInput.files || !fileInput.files[0]) {
+        alert('Selecteer eerst je huidige index.html bestand.');
+        return;
+      }
+      if (items.length === 0) {
+        alert('Voeg eerst minstens één foto of video toe.');
+        return;
+      }
+
       const reader = new FileReader();
-      reader.onload = function(ev) {
-        editor.value = ev.target.result || '';
-        syncTitleFromCode();
-        refreshPreview();
-        setMsg('Bestand geladen: ' + file.name, false);
-      };
-      reader.onerror = function() {
-        setMsg('Fout bij het lezen van het bestand.', true);
-      };
-      reader.readAsText(file);
-    });
+      reader.onload = function(e) {
+        let html = e.target.result;
+        const { galleryHtml, lightboxHtml, videoHtml } = buildSnippets();
 
-    editor.value = starterHtml;
-    syncTitleFromCode();
-    refreshPreview();
+        if (galleryHtml) {
+          html = html.replace('<main class="gallery">', '<main class="gallery">\n' + galleryHtml + '\n');
+        }
+        if (lightboxHtml) {
+          html = html.replace('<!-- LIGHTBOXES -->', '<!-- LIGHTBOXES -->\n' + lightboxHtml);
+        }
+        if (videoHtml) {
+          html = html.replace('<!-- VIDEO GALLERY -->\n    <main class="gallery">', '<!-- VIDEO GALLERY -->\n    <main class="gallery">\n' + videoHtml + '\n');
+        }
+
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'index.html';
+        a.click();
+        URL.revokeObjectURL(url);
+
+        status.textContent = 'Nieuwe index.html gedownload! Vervang het oude bestand op GitHub en upload ook je nieuwe foto-/videobestanden.';
+      };
+      reader.readAsText(fileInput.files[0], 'UTF-8');
+    }
   </script>
 </body>
 </html>
