@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTML Editor &amp; Admin Tool</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+      padding: 1rem;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      background: #1e293b;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .toolbar h1 {
+      font-size: 1.05rem;
+      color: #f3d078;
+      margin-right: auto;
+    }
+    button, .file-label {
+      background: #334155;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 0.5rem 0.85rem;
+      border-radius: 7px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    button:hover, .file-label:hover {
+      background: #475569;
+      border-color: #f3d078;
+    }
+    .primary {
+      background: #d4af37;
+      color: #0f172a;
+      border-color: #d4af37;
+    }
+    .primary:hover {
+      background: #f3d078;
+    }
+    #msg {
+      width: 100%;
+      font-size: 0.85rem;
+      color: #86efac;
+      margin-top: 0.25rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .box {
+      background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .box h2 {
+      font-size: 0.95rem;
+      color: #f3d078;
+      margin-bottom: 0.75rem;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      margin-top: 0.6rem;
+      margin-bottom: 0.25rem;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      background: #090d16;
+      color: #f8fafc;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 7px;
+      padding: 0.55rem 0.7rem;
+      font-size: 0.88rem;
+      font-family: inherit;
+    }
+    textarea#codeEditor {
+      min-height: 460px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+    .preview-frame {
+      width: 100%;
+      min-height: 460px;
+      background: #fff;
+      border-radius: 7px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .row-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <h1>HTML Admin Tool</h1>
+
+    <label class="file-label">
+      Open .html bestand
+      <input type="file" id="openFile" accept=".html,.htm,text/html" style="display:none" />
+    </label>
+
+    <button type="button" onclick="refreshPreview()">Voorbeeld verversen</button>
+    <button type="button" onclick="openInNewTab()">Open in nieuw tabblad</button>
+    <button type="button" onclick="copyCode()">Kopieer HTML</button>
+    <button type="button" class="primary" onclick="saveFile()">Download .html</button>
+
+    <div id="msg">Klaar. Laad een .html bestand of pas de code/velden hieronder aan.</div>
+  </div>
+
+  <div class="grid">
+    <div class="box">
+      <h2>Snelle aanpassingen</h2>
+
+      <label for="pageTitle">Paginatitel (&lt;title&gt;)</label>
+      <input type="text" id="pageTitle" oninput="updateTitleInCode()" />
+
+      <label for="findText">Tekst zoeken in HTML</label>
+      <input type="text" id="findText" placeholder="Bijv. Outdoor Vlogs" />
+
+      <label for="replaceText">Vervangen door</label>
+      <input type="text" id="replaceText" placeholder="Bijv. Mijn Vlogs" />
+
+      <div class="row-actions">
+        <button type="button" onclick="replaceFirst()">Vervang eerste</button>
+        <button type="button" onclick="replaceAllMatches()">Vervang alles</button>
+      </div>
+
+      <label for="codeEditor" style="margin-top:1rem;">HTML-broncode</label>
+      <textarea id="codeEditor" oninput="refreshPreview(); syncTitleFromCode();"></textarea>
+    </div>
+
+    <div class="box">
+      <h2>Live voorbeeld</h2>
+      <iframe id="preview" class="preview-frame"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const starterHtml = `<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mijn Pagina</title>
+  <style>
+    body { font-family: sans-serif; background: #111827; color: #f8fafc; padding: 2rem; }
+    nav a { color: #f3d078; margin-right: 1rem; text-decoration: none; cursor: pointer; }
+    section { display: none; margin-top: 1.5rem; }
+    section.active { display: block; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a onclick="showSec('home')">Home</a>
+    <a onclick="showSec('vlogs')">Outdoor Vlogs</a>
+    <a onclick="showSec('about')">Over mij</a>
+  </nav>
+
+  <section id="sec-home" class="active">
+    <h1>Welkom</h1>
+    <p>Startpagina inhoud.</p>
+  </section>
+
+  <section id="sec-vlogs">
+    <h1>Outdoor Vlogs</h1>
+    <p>Videopagina inhoud.</p>
+  </section>
+
+  <section id="sec-about">
+    <h1>Over mij</h1>
+    <p>Over mij inhoud.</p>
+  </section>
+
+  <script>
+    function showSec(name) {
+      document.querySelectorAll('section').forEach(function(el) { el.classList.remove('active'); });
+      var target = document.getElementById('sec-' + name);
+      if (target) target.classList.add('active');
+    }
+  <\/script>
+</body>
+</html>`;
+
+    const editor = document.getElementById('codeEditor');
+    const preview = document.getElementById('preview');
+    const msg = document.getElementById('msg');
+    const titleInput = document.getElementById('pageTitle');
+
+    function setMsg(text, isError) {
+      msg.textContent = text;
+      msg.style.color = isError ? '#fca5a5' : '#86efac';
+    }
+
+    function refreshPreview() {
+      try {
+        const doc = preview.contentDocument || preview.contentWindow.document;
+        doc.open();
+        doc.write(editor.value);
+        doc.close();
+        setMsg('Voorbeeld bijgewerkt om ' + new Date().toLocaleTimeString(), false);
+      } catch (err) {
+        setMsg('Kon voorbeeld niet bijwerken: ' + err.message, true);
+      }
+    }
+
+    function syncTitleFromCode() {
+      const match = editor.value.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+      titleInput.value = match ? match[1].trim() : '';
+    }
+
+    function updateTitleInCode() {
+      const newTitle = titleInput.value;
+      if (/<title[^>]*>[\s\S]*?<\/title>/i.test(editor.value)) {
+        editor.value = editor.value.replace(/<title[^>]*>[\s\S]*?<\/title>/i, '<title>' + newTitle + '</title>');
+      } else if (/<head[^>]*>/i.test(editor.value)) {
+        editor.value = editor.value.replace(/<head([^>]*)>/i, '<head$1>\n  <title>' + newTitle + '</title>');
+      }
+      refreshPreview();
+    }
+
+    function replaceFirst() {
+      const findVal = document.getElementById('findText').value;
+      const repVal = document.getElementById('replaceText').value;
+      if (!findVal) {
+        setMsg('Vul eerst een zoektekst in.', true);
+        return;
+      }
+      if (!editor.value.includes(findVal)) {
+        setMsg('Tekst niet gevonden in de HTML.', true);
+        return;
+      }
+      editor.value = editor.value.replace(findVal, repVal);
+      syncTitleFromCode();
+      refreshPreview();
+      setMsg('Eerste overeenkomst vervangen.', false);
+    }
+
+    function replaceAllMatches() {
+      const findVal = document.getElementById('findText').value;
+      const repVal = document.getElementById('replaceText').value;
+      if (!findVal) {
+        setMsg('Vul eerst een zoektekst in.', true);
+        return;
+      }
+      const parts = editor.value.split(findVal);
+      if (parts.length === 1) {
+        setMsg('Tekst niet gevonden in de HTML.', true);
+        return;
+      }
+      editor.value = parts.join(repVal);
+      syncTitleFromCode();
+      refreshPreview();
+      setMsg((parts.length - 1) + ' overeenkomsten vervangen.', false);
+    }
+
+    function openInNewTab() {
+      const blob = new Blob([editor.value], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setMsg('Geopend in nieuw tabblad.', false);
+    }
+
+    function copyCode() {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(editor.value)
+          .then(function() { setMsg('HTML gekopieerd naar klembord.', false); })
+          .catch(function() { fallbackCopy(); });
+      } else {
+        fallbackCopy();
+      }
+    }
+
+    function fallbackCopy() {
+      editor.select();
+      document.execCommand('copy');
+      setMsg('HTML gekopieerd naar klembord.', false);
+    }
+
+    function saveFile() {
+      const blob = new Blob([editor.value], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'index.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setMsg('Bestand index.html gedownload.', false);
+    }
+
+    document.getElementById('openFile').addEventListener('change', function(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        editor.value = ev.target.result || '';
+        syncTitleFromCode();
+        refreshPreview();
+        setMsg('Bestand geladen: ' + file.name, false);
+      };
+      reader.onerror = function() {
+        setMsg('Fout bij het lezen van het bestand.', true);
+      };
+      reader.readAsText(file);
+    });
+
+    editor.value = starterHtml;
+    syncTitleFromCode();
+    refreshPreview();
+  </script>
+</body>
+</html>
