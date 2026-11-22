@@ -3,30 +3,57 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Xbox Edge Mini-Game Hub (8 Games)</title>
+  <title>Xbox Edge Arcade Hub</title>
   <style>
+    :root {
+      --bg-base: #07090e;
+      --bg-surface: rgba(18, 23, 34, 0.72);
+      --bg-card: rgba(24, 31, 46, 0.65);
+      --bg-card-hover: rgba(32, 42, 62, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-glow: #107c10;
+      --accent: #22c55e;
+      --accent-bright: #4ade80;
+      --accent-cyan: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      background: #0d1117;
-      color: #e6edf3;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: var(--bg-base);
+      background-image:
+        radial-gradient(circle at 15% 15%, rgba(34, 197, 94, 0.14), transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(56, 189, 248, 0.12), transparent 45%),
+        linear-gradient(180deg, #090d16 0%, #05070b 100%);
+      color: var(--text-main);
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 24px;
       user-select: none;
+      overflow-x: hidden;
     }
 
     .shell {
       width: 100%;
-      max-width: 980px;
-      background: #161b22;
-      border: 2px solid #30363d;
-      border-radius: 14px;
-      padding: 22px;
-      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+      max-width: 1060px;
+      background: var(--bg-surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.65),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
 
     header {
@@ -34,83 +61,185 @@
       justify-content: space-between;
       align-items: center;
       gap: 16px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid #30363d;
-      margin-bottom: 18px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 24px;
       flex-wrap: wrap;
     }
 
-    h1 {
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #22c55e, #0ea5e9);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: #05070b;
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+    }
+
+    .brand h1 {
       font-size: 1.45rem;
-      color: #3fb950;
-      letter-spacing: 0.5px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #ffffff, #cbd5e1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand span {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 500;
     }
 
     .pad-badge {
-      font-size: 0.85rem;
-      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.84rem;
+      font-weight: 500;
+      padding: 8px 16px;
       border-radius: 999px;
-      background: #0d1117;
-      border: 1px solid #30363d;
-      color: #8b949e;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      transition: all 0.25s ease;
     }
+
+    .pad-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #64748b;
+    }
+
     .pad-badge.connected {
-      border-color: #2ea043;
-      color: #7ee787;
+      border-color: rgba(74, 222, 128, 0.4);
+      background: rgba(20, 83, 45, 0.35);
+      color: var(--accent-bright);
+      box-shadow: 0 0 18px rgba(34, 197, 94, 0.15);
+    }
+
+    .pad-badge.connected .pad-dot {
+      background: var(--accent-bright);
+      box-shadow: 0 0 8px var(--accent-bright);
     }
 
     /* HUB MENU */
     #hubView {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 18px;
     }
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+      gap: 16px;
     }
 
     .card {
-      background: #0d1117;
-      border: 2px solid #30363d;
-      border-radius: 12px;
-      padding: 15px;
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px;
       cursor: pointer;
-      transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+                  border-color 0.18s ease,
+                  background 0.18s ease,
+                  box-shadow 0.18s ease;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
     }
 
     .card.selected {
-      border-color: #3fb950;
-      transform: translateY(-3px);
-      box-shadow: 0 0 0 3px rgba(63, 185, 80, 0.25);
+      background: var(--bg-card-hover);
+      border-color: var(--accent-bright);
+      transform: translateY(-4px) scale(1.015);
+      box-shadow:
+        0 14px 30px rgba(0, 0, 0, 0.45),
+        0 0 0 2px rgba(74, 222, 128, 0.35),
+        0 0 24px rgba(34, 197, 94, 0.22);
+    }
+
+    .card.selected::before {
+      opacity: 1;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .card-num {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+    }
+
+    .card.selected .card-num {
+      background: rgba(74, 222, 128, 0.18);
+      color: var(--accent-bright);
     }
 
     .card h2 {
-      font-size: 1.08rem;
+      font-size: 1.12rem;
+      font-weight: 700;
       margin-bottom: 6px;
-      color: #fff;
+      color: #ffffff;
+      letter-spacing: -0.01em;
     }
 
     .card p {
       font-size: 0.85rem;
-      color: #8b949e;
-      line-height: 1.4;
-      margin-bottom: 12px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 14px;
     }
 
     .card .meta {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       font-size: 0.78rem;
-      color: #7ee787;
+      color: var(--accent-cyan);
       font-weight: 600;
-      border-top: 1px solid #21262d;
-      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 10px;
+    }
+
+    .card .meta .best {
+      color: var(--accent-bright);
     }
 
     /* GAME VIEW */
@@ -118,93 +247,151 @@
       display: none;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
     .hud-bar {
       width: 100%;
-      max-width: 640px;
+      max-width: 660px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #0d1117;
-      border: 1px solid #30363d;
-      border-radius: 8px;
-      padding: 10px 16px;
-      font-size: 0.98rem;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px 18px;
+      font-size: 0.96rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     }
 
-    .hud-bar strong { color: #3fb950; }
+    .hud-bar #gameTitle {
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .hud-bar strong {
+      color: var(--accent-bright);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hud-bar #hudExtra {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
 
     .canvas-wrap {
       position: relative;
       width: 100%;
-      max-width: 640px;
+      max-width: 660px;
     }
 
     canvas {
       display: block;
       width: 100%;
       height: auto;
-      background: #0d1117;
-      border: 2px solid #30363d;
-      border-radius: 10px;
+      background: #080b12;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-md);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     }
 
     .overlay {
       position: absolute;
       inset: 0;
-      background: rgba(13, 17, 23, 0.86);
-      border-radius: 10px;
+      background: rgba(7, 9, 14, 0.82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: var(--radius-md);
       display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 24px;
-      gap: 12px;
+      padding: 28px;
+      gap: 14px;
     }
+
     .overlay.show { display: flex; }
-    .overlay h3 { font-size: 1.55rem; color: #fff; }
-    .overlay p { color: #8b949e; max-width: 400px; line-height: 1.45; }
+
+    .overlay h3 {
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .overlay p {
+      color: var(--text-muted);
+      max-width: 400px;
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
 
     .btn-row {
       display: flex;
       gap: 12px;
-      margin-top: 6px;
+      margin-top: 8px;
     }
 
     button {
-      background: #238636;
-      color: #fff;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #05070b;
       border: none;
-      padding: 10px 18px;
-      border-radius: 6px;
+      padding: 11px 22px;
+      border-radius: 10px;
       font-size: 0.92rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
+      transition: transform 0.12s ease, filter 0.12s ease;
     }
-    button.secondary { background: #30363d; }
+
+    button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+    button.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
 
     .footer-hint {
-      margin-top: 16px;
-      padding-top: 12px;
-      border-top: 1px solid #30363d;
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-subtle);
       font-size: 0.82rem;
-      color: #8b949e;
+      color: var(--text-muted);
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
     }
-    .footer-hint span { color: #e6edf3; font-weight: 600; }
+
+    .key-pill {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+      font-weight: 600;
+      font-size: 0.76rem;
+      margin-right: 3px;
+    }
   </style>
 </head>
 <body>
   <div class="shell">
     <header>
-      <h1>XBOX MINI-GAME HUB</h1>
-      <div class="pad-badge" id="padBadge">Druk op een knop op je controller...</div>
+      <div class="brand">
+        <div class="brand-icon">X</div>
+        <div>
+          <h1>ARCADE HUB</h1>
+          <span>Xbox Edge &amp; Controller Suite</span>
+        </div>
+      </div>
+      <div class="pad-badge" id="padBadge">
+        <span class="pad-dot"></span>
+        <span id="padText">Druk op een knop op je controller...</span>
+      </div>
     </header>
 
     <!-- HUB MENU -->
@@ -212,89 +399,97 @@
       <div class="cards" id="cardGrid">
         <article class="card selected" data-game="snake">
           <div>
-            <h2>1. Neon Snake</h2>
+            <div class="card-top"><span class="card-num">01 • Arcade</span></div>
+            <h2>Neon Snake</h2>
             <p>Eet energieblokjes, groei langer en ga door de randen van het scherm heen.</p>
           </div>
           <div class="meta">
             <span>D-Pad / Stick</span>
-            <span>Best: <span id="hs-snake">0</span></span>
+            <span class="best">Best: <span id="hs-snake">0</span></span>
           </div>
         </article>
 
         <article class="card" data-game="breakout">
           <div>
-            <h2>2. Brick Breaker</h2>
+            <div class="card-top"><span class="card-num">02 • Retro</span></div>
+            <h2>Brick Breaker</h2>
             <p>Breek alle gekleurde blokken met de bal en houd je 3 levens vast.</p>
           </div>
           <div class="meta">
             <span>Links / Rechts</span>
-            <span>Best: <span id="hs-breakout">0</span></span>
+            <span class="best">Best: <span id="hs-breakout">0</span></span>
           </div>
         </article>
 
         <article class="card" data-game="space">
           <div>
-            <h2>3. Space Defender</h2>
+            <div class="card-top"><span class="card-num">03 • Shooter</span></div>
+            <h2>Space Defender</h2>
             <p>Verdedig de onderkant van het scherm tegen steeds snellere golven vijanden.</p>
           </div>
           <div class="meta">
-            <span>Bewegen + A Schieten</span>
-            <span>Best: <span id="hs-space">0</span></span>
+            <span>Bewegen + A</span>
+            <span class="best">Best: <span id="hs-space">0</span></span>
           </div>
         </article>
 
         <article class="card" data-game="flappy">
           <div>
-            <h2>4. Flappy Neon</h2>
+            <div class="card-top"><span class="card-num">04 • Reflex</span></div>
+            <h2>Flappy Neon</h2>
             <p>Tik op A of Omhoog om door de smalle laserpoorten te zweven.</p>
           </div>
           <div class="meta">
-            <span>A / Omhoog / Spatie</span>
-            <span>Best: <span id="hs-flappy">0</span></span>
+            <span>A / Omhoog</span>
+            <span class="best">Best: <span id="hs-flappy">0</span></span>
           </div>
         </article>
 
         <article class="card" data-game="pong">
           <div>
-            <h2>5. 2P Couch Pong</h2>
+            <div class="card-top"><span class="card-num">05 • Couch Co-op</span></div>
+            <h2>2P Couch Pong</h2>
             <p>Speel samen op de bank! P1: Pad 1 / W-S. P2: Pad 2 / Pijlen (of AI bij 1 pad).</p>
           </div>
           <div class="meta">
-            <span>2 Controllers / 1 PC</span>
-            <span>Eerst tot 7</span>
+            <span>2 Controllers</span>
+            <span class="best">Eerst tot 7</span>
           </div>
         </article>
 
         <article class="card" data-game="asteroids">
           <div>
-            <h2>6. Asteroid Dodger</h2>
+            <div class="card-top"><span class="card-num">06 • Survival</span></div>
+            <h2>Asteroid Dodger</h2>
             <p>Stuur door een steeds sneller veld van asteroïden en overleef zo lang mogelijk.</p>
           </div>
           <div class="meta">
             <span>D-Pad / Stick</span>
-            <span>Best: <span id="hs-asteroids">0</span></span>
+            <span class="best">Best: <span id="hs-asteroids">0</span></span>
           </div>
         </article>
 
         <article class="card" data-game="g2048">
           <div>
-            <h2>7. 2048 Grid</h2>
+            <div class="card-top"><span class="card-num">07 • Puzzel</span></div>
+            <h2>2048 Grid</h2>
             <p>Schuif tegels samen en jaag op hoge getallen in een rustiger tempo.</p>
           </div>
           <div class="meta">
             <span>D-Pad / Pijlen</span>
-            <span>Best: <span id="hs-g2048">0</span></span>
+            <span class="best">Best: <span id="hs-g2048">0</span></span>
           </div>
         </article>
 
         <article class="card" data-game="tetris">
           <div>
-            <h2>8. Neon Tetris</h2>
-            <p>Draai en stapel vallende blokken. X / Spatie voor hard drop, A / Omhoog om te draaien.</p>
+            <div class="card-top"><span class="card-num">08 • Klassieker</span></div>
+            <h2>Neon Tetris</h2>
+            <p>Draai en stapel vallende blokken. X / Spatie voor hard drop, A om te draaien.</p>
           </div>
           <div class="meta">
-            <span>A Draai • X Hard Drop</span>
-            <span>Best: <span id="hs-tetris">0</span></span>
+            <span>A Draai • X Drop</span>
+            <span class="best">Best: <span id="hs-tetris">0</span></span>
           </div>
         </article>
       </div>
@@ -322,8 +517,8 @@
     </section>
 
     <footer class="footer-hint">
-      <div><span>Menu:</span> D-Pad / Pijlen • <span>Start / Actie:</span> A / Enter / Spatie</div>
-      <div><span>Pauze:</span> Start / P • <span>Terug naar Hub:</span> B / Esc (tijdens pauze/game over)</div>
+      <div><span class="key-pill">D-Pad</span> Navigatie &nbsp; <span class="key-pill">A</span> Start / Actie &nbsp; <span class="key-pill">X</span> Special</div>
+      <div><span class="key-pill">Menu</span> Pauze &nbsp; <span class="key-pill">B</span> Terug naar Hub</div>
     </footer>
   </div>
 
@@ -334,6 +529,7 @@
     const hubView = document.getElementById("hubView");
     const gameView = document.getElementById("gameView");
     const padBadge = document.getElementById("padBadge");
+    const padText = document.getElementById("padText");
     const cards = Array.from(document.querySelectorAll(".card"));
 
     const canvas = document.getElementById("gameCanvas");
@@ -405,10 +601,10 @@
       const pad2 = pads[1] || null;
 
       if (pads.length > 0) {
-        padBadge.textContent = `${pads.length} controller(s) actief: ${pad1.id.slice(0, 24)}`;
+        padText.textContent = `${pads.length} controller(s) verbonden • ${pad1.id.slice(0, 22)}`;
         padBadge.classList.add("connected");
       } else {
-        padBadge.textContent = "Geen controller gedetecteerd (toetsenbord actief)";
+        padText.textContent = "Geen controller (toetsenbord actief)";
         padBadge.classList.remove("connected");
       }
 
@@ -659,8 +855,8 @@
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         for (const b of bricks) if (b.alive) { ctx.fillStyle = b.color; ctx.fillRect(b.x, b.y, b.w, b.h); }
-        ctx.fillStyle = "#e6edf3"; ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
-        ctx.fillStyle = "#3fb950"; ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#f8fafc"; ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
+        ctx.fillStyle = "#4ade80"; ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fill();
       }
 
       return { init, update, draw };
@@ -852,7 +1048,7 @@
 
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#2ea043";
+        ctx.fillStyle = "#22c55e";
         for (const p of pipes) {
           ctx.fillRect(p.x, 0, p.w, p.topH);
           ctx.fillRect(p.x, p.topH + p.gap, p.w, canvas.height - (p.topH + p.gap));
@@ -862,8 +1058,8 @@
         ctx.beginPath(); ctx.arc(bird.x, bird.y, bird.r, 0, Math.PI * 2); ctx.fill();
 
         if (!started) {
-          ctx.fillStyle = "#e6edf3";
-          ctx.font = "600 18px system-ui, sans-serif";
+          ctx.fillStyle = "#f8fafc";
+          ctx.font = "600 18px 'Segoe UI', system-ui, sans-serif";
           ctx.textAlign = "center";
           ctx.fillText("Druk op A / Omhoog / Spatie om te vliegen!", canvas.width / 2, canvas.height / 2 - 40);
           ctx.textAlign = "left";
@@ -953,13 +1149,13 @@
 
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#30363d";
+        ctx.fillStyle = "rgba(255,255,255,0.12)";
         for (let y = 10; y < canvas.height; y += 26) ctx.fillRect(canvas.width / 2 - 2, y, 4, 14);
 
         ctx.fillStyle = "#38bdf8"; ctx.fillRect(p1.x, p1.y, p1.w, p1.h);
         ctx.fillStyle = "#f87171"; ctx.fillRect(p2.x, p2.y, p2.w, p2.h);
 
-        ctx.fillStyle = "#e6edf3";
+        ctx.fillStyle = "#f8fafc";
         ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fill();
       }
 
@@ -1039,7 +1235,7 @@
         ctx.arc(player.x, player.y, player.r, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = "#8b949e";
+        ctx.fillStyle = "#94a3b8";
         for (const rock of rocks) {
           ctx.beginPath();
           ctx.arc(rock.x, rock.y, rock.r, 0, Math.PI * 2);
@@ -1167,11 +1363,11 @@
 
       function tileColor(val) {
         const map = {
-          0: "#161b22", 2: "#21262d", 4: "#2d333b", 8: "#1f6feb",
-          16: "#238636", 32: "#9e6a03", 64: "#da3633", 128: "#8957e5",
-          256: "#388bfd", 512: "#2ea043", 1024: "#d29922", 2048: "#f85149",
+          0: "#111827", 2: "#1e293b", 4: "#334155", 8: "#0284c7",
+          16: "#16a34a", 32: "#ca8a04", 64: "#dc2626", 128: "#7c3aed",
+          256: "#2563eb", 512: "#059669", 1024: "#d97706", 2048: "#e11d48",
         };
-        return map[val] || "#3fb950";
+        return map[val] || "#22c55e";
       }
 
       function draw() {
@@ -1185,7 +1381,7 @@
         const gap = 10;
         const cell = (boxSize - gap * (SIZE + 1)) / SIZE;
 
-        ctx.fillStyle = "#010409";
+        ctx.fillStyle = "#060911";
         ctx.fillRect(startX, startY, boxSize, boxSize);
 
         for (let r = 0; r < SIZE; r++) {
@@ -1199,7 +1395,7 @@
 
             if (val !== 0) {
               ctx.fillStyle = "#ffffff";
-              ctx.font = val >= 1024 ? "700 22px system-ui, sans-serif" : "700 28px system-ui, sans-serif";
+              ctx.font = val >= 1024 ? "700 22px 'Segoe UI', system-ui, sans-serif" : "700 28px 'Segoe UI', system-ui, sans-serif";
               ctx.textAlign = "center";
               ctx.textBaseline = "middle";
               ctx.fillText(String(val), x + cell / 2, y + cell / 2);
@@ -1399,9 +1595,9 @@
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = "#161b22";
+        ctx.fillStyle = "#0f172a";
         ctx.fillRect(OFFSET_X, OFFSET_Y, BOARD_W, BOARD_H);
-        ctx.strokeStyle = "#30363d";
+        ctx.strokeStyle = "rgba(255,255,255,0.12)";
         ctx.lineWidth = 2;
         ctx.strokeRect(OFFSET_X, OFFSET_Y, BOARD_W, BOARD_H);
 
