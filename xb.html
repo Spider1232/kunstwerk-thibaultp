@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xbox Edge Mini-Game Hub (8 Games)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d1117;
+      color: #e6edf3;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      user-select: none;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 980px;
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #30363d;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-size: 1.45rem;
+      color: #3fb950;
+      letter-spacing: 0.5px;
+    }
+
+    .pad-badge {
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      color: #8b949e;
+    }
+    .pad-badge.connected {
+      border-color: #2ea043;
+      color: #7ee787;
+    }
+
+    /* HUB MENU */
+    #hubView {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: #0d1117;
+      border: 2px solid #30363d;
+      border-radius: 12px;
+      padding: 15px;
+      cursor: pointer;
+      transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card.selected {
+      border-color: #3fb950;
+      transform: translateY(-3px);
+      box-shadow: 0 0 0 3px rgba(63, 185, 80, 0.25);
+    }
+
+    .card h2 {
+      font-size: 1.08rem;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    .card p {
+      font-size: 0.85rem;
+      color: #8b949e;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .card .meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: #7ee787;
+      font-weight: 600;
+      border-top: 1px solid #21262d;
+      padding-top: 8px;
+    }
+
+    /* GAME VIEW */
+    #gameView {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hud-bar {
+      width: 100%;
+      max-width: 640px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.98rem;
+    }
+
+    .hud-bar strong { color: #3fb950; }
+
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 640px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #0d1117;
+      border: 2px solid #30363d;
+      border-radius: 10px;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 17, 23, 0.86);
+      border-radius: 10px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      gap: 12px;
+    }
+    .overlay.show { display: flex; }
+    .overlay h3 { font-size: 1.55rem; color: #fff; }
+    .overlay p { color: #8b949e; max-width: 400px; line-height: 1.45; }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    button {
+      background: #238636;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.secondary { background: #30363d; }
+
+    .footer-hint {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #30363d;
+      font-size: 0.82rem;
+      color: #8b949e;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .footer-hint span { color: #e6edf3; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <h1>XBOX MINI-GAME HUB</h1>
+      <div class="pad-badge" id="padBadge">Druk op een knop op je controller...</div>
+    </header>
+
+    <!-- HUB MENU -->
+    <section id="hubView">
+      <div class="cards" id="cardGrid">
+        <article class="card selected" data-game="snake">
+          <div>
+            <h2>1. Neon Snake</h2>
+            <p>Eet energieblokjes, groei langer en ga door de randen van het scherm heen.</p>
+          </div>
+          <div class="meta">
+            <span>D-Pad / Stick</span>
+            <span>Best: <span id="hs-snake">0</span></span>
+          </div>
+        </article>
+
+        <article class="card" data-game="breakout">
+          <div>
+            <h2>2. Brick Breaker</h2>
+            <p>Breek alle gekleurde blokken met de bal en houd je 3 levens vast.</p>
+          </div>
+          <div class="meta">
+            <span>Links / Rechts</span>
+            <span>Best: <span id="hs-breakout">0</span></span>
+          </div>
+        </article>
+
+        <article class="card" data-game="space">
+          <div>
+            <h2>3. Space Defender</h2>
+            <p>Verdedig de onderkant van het scherm tegen steeds snellere golven vijanden.</p>
+          </div>
+          <div class="meta">
+            <span>Bewegen + A Schieten</span>
+            <span>Best: <span id="hs-space">0</span></span>
+          </div>
+        </article>
+
+        <article class="card" data-game="flappy">
+          <div>
+            <h2>4. Flappy Neon</h2>
+            <p>Tik op A of Omhoog om door de smalle laserpoorten te zweven.</p>
+          </div>
+          <div class="meta">
+            <span>A / Omhoog / Spatie</span>
+            <span>Best: <span id="hs-flappy">0</span></span>
+          </div>
+        </article>
+
+        <article class="card" data-game="pong">
+          <div>
+            <h2>5. 2P Couch Pong</h2>
+            <p>Speel samen op de bank! P1: Pad 1 / W-S. P2: Pad 2 / Pijlen (of AI bij 1 pad).</p>
+          </div>
+          <div class="meta">
+            <span>2 Controllers / 1 PC</span>
+            <span>Eerst tot 7</span>
+          </div>
+        </article>
+
+        <article class="card" data-game="asteroids">
+          <div>
+            <h2>6. Asteroid Dodger</h2>
+            <p>Stuur door een steeds sneller veld van asteroïden en overleef zo lang mogelijk.</p>
+          </div>
+          <div class="meta">
+            <span>D-Pad / Stick</span>
+            <span>Best: <span id="hs-asteroids">0</span></span>
+          </div>
+        </article>
+
+        <article class="card" data-game="g2048">
+          <div>
+            <h2>7. 2048 Grid</h2>
+            <p>Schuif tegels samen en jaag op hoge getallen in een rustiger tempo.</p>
+          </div>
+          <div class="meta">
+            <span>D-Pad / Pijlen</span>
+            <span>Best: <span id="hs-g2048">0</span></span>
+          </div>
+        </article>
+
+        <article class="card" data-game="tetris">
+          <div>
+            <h2>8. Neon Tetris</h2>
+            <p>Draai en stapel vallende blokken. X / Spatie voor hard drop, A / Omhoog om te draaien.</p>
+          </div>
+          <div class="meta">
+            <span>A Draai • X Hard Drop</span>
+            <span>Best: <span id="hs-tetris">0</span></span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ACTIEVE GAME -->
+    <section id="gameView">
+      <div class="hud-bar">
+        <span id="gameTitle">Game</span>
+        <span>Score: <strong id="hudScore">0</strong></span>
+        <span id="hudExtra">Highscore: 0</span>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="gameCanvas" width="640" height="420"></canvas>
+        <div class="overlay" id="overlay">
+          <h3 id="overlayTitle">Gepauzeerd</h3>
+          <p id="overlayDesc">Druk op A / Enter om door te gaan, of B / Esc voor het hoofdmenu.</p>
+          <div class="btn-row">
+            <button id="btnPrimary" type="button">Doorgaan / Opnieuw (A)</button>
+            <button id="btnHub" class="secondary" type="button">Hoofdmenu (B)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer-hint">
+      <div><span>Menu:</span> D-Pad / Pijlen • <span>Start / Actie:</span> A / Enter / Spatie</div>
+      <div><span>Pauze:</span> Start / P • <span>Terug naar Hub:</span> B / Esc (tijdens pauze/game over)</div>
+    </footer>
+  </div>
+
+  <script>
+    // =========================================================
+    // 1. CENTRALE STATE & INPUT MANAGER (GAMEPAD + TOETSENBORD)
+    // =========================================================
+    const hubView = document.getElementById("hubView");
+    const gameView = document.getElementById("gameView");
+    const padBadge = document.getElementById("padBadge");
+    const cards = Array.from(document.querySelectorAll(".card"));
+
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const gameTitleEl = document.getElementById("gameTitle");
+    const hudScoreEl = document.getElementById("hudScore");
+    const hudExtraEl = document.getElementById("hudExtra");
+
+    const overlayEl = document.getElementById("overlay");
+    const overlayTitleEl = document.getElementById("overlayTitle");
+    const overlayDescEl = document.getElementById("overlayDesc");
+    const btnPrimary = document.getElementById("btnPrimary");
+    const btnHub = document.getElementById("btnHub");
+
+    const highscores = {
+      snake: Number(localStorage.getItem("hub_hs_snake") || 0),
+      breakout: Number(localStorage.getItem("hub_hs_breakout") || 0),
+      space: Number(localStorage.getItem("hub_hs_space") || 0),
+      flappy: Number(localStorage.getItem("hub_hs_flappy") || 0),
+      asteroids: Number(localStorage.getItem("hub_hs_asteroids") || 0),
+      g2048: Number(localStorage.getItem("hub_hs_g2048") || 0),
+      tetris: Number(localStorage.getItem("hub_hs_tetris") || 0),
+    };
+
+    function refreshHighscoreLabels() {
+      for (const key of Object.keys(highscores)) {
+        const el = document.getElementById(`hs-${key}`);
+        if (el) el.textContent = highscores[key];
+      }
+    }
+    refreshHighscoreLabels();
+
+    let mode = "hub";
+    let selectedCardIndex = 0;
+    let paused = false;
+    let gameOver = false;
+
+    const input = {
+      left: false, right: false, up: false, down: false,
+      axisX: 0, axisY: 0,
+      p2AxisY: 0, hasPad2: false,
+      justLeft: false, justRight: false, justUp: false, justDown: false,
+      justA: false, justB: false, justX: false, justPause: false,
+    };
+
+    const keyDownSet = new Set();
+    const prevState = new Map();
+
+    window.addEventListener("keydown", (e) => {
+      if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Space"].includes(e.code)) {
+        e.preventDefault();
+      }
+      keyDownSet.add(e.code);
+    });
+
+    window.addEventListener("keyup", (e) => {
+      keyDownSet.delete(e.code);
+    });
+
+    function edge(name, current) {
+      const prev = prevState.get(name) || false;
+      prevState.set(name, current);
+      return current && !prev;
+    }
+
+    function updateInput() {
+      const pads = navigator.getGamepads ? Array.from(navigator.getGamepads()).filter((p) => p && p.connected) : [];
+      const pad1 = pads[0] || null;
+      const pad2 = pads[1] || null;
+
+      if (pads.length > 0) {
+        padBadge.textContent = `${pads.length} controller(s) actief: ${pad1.id.slice(0, 24)}`;
+        padBadge.classList.add("connected");
+      } else {
+        padBadge.textContent = "Geen controller gedetecteerd (toetsenbord actief)";
+        padBadge.classList.remove("connected");
+      }
+
+      const btn = (pad, idx) => Boolean(pad && pad.buttons[idx] && pad.buttons[idx].pressed);
+      const rawAxisX = pad1 && Math.abs(pad1.axes[0]) > 0.2 ? pad1.axes[0] : 0;
+      const rawAxisY = pad1 && Math.abs(pad1.axes[1]) > 0.2 ? pad1.axes[1] : 0;
+
+      const left = keyDownSet.has("ArrowLeft") || keyDownSet.has("KeyA") || btn(pad1, 14) || rawAxisX < -0.5;
+      const right = keyDownSet.has("ArrowRight") || keyDownSet.has("KeyD") || btn(pad1, 15) || rawAxisX > 0.5;
+      const up = keyDownSet.has("ArrowUp") || keyDownSet.has("KeyW") || btn(pad1, 12) || rawAxisY < -0.5;
+      const down = keyDownSet.has("ArrowDown") || keyDownSet.has("KeyS") || btn(pad1, 13) || rawAxisY > 0.5;
+
+      const actA = keyDownSet.has("Enter") || btn(pad1, 0);
+      const actB = keyDownSet.has("Escape") || keyDownSet.has("Backspace") || btn(pad1, 1);
+      const actX = keyDownSet.has("Space") || btn(pad1, 2);
+      const actPause = keyDownSet.has("KeyP") || btn(pad1, 9);
+
+      input.left = left;
+      input.right = right;
+      input.up = up;
+      input.down = down;
+      input.axisX = rawAxisX !== 0 ? rawAxisX : (right ? 1 : left ? -1 : 0);
+      input.axisY = rawAxisY !== 0 ? rawAxisY : (down ? 1 : up ? -1 : 0);
+
+      const p2KeyAxis = (keyDownSet.has("ArrowDown") ? 1 : 0) - (keyDownSet.has("ArrowUp") ? 1 : 0);
+      const p2PadAxis = pad2
+        ? (Math.abs(pad2.axes[1]) > 0.2 ? pad2.axes[1] : (btn(pad2, 13) ? 1 : btn(pad2, 12) ? -1 : 0))
+        : 0;
+      input.hasPad2 = Boolean(pad2) || keyDownSet.has("ArrowUp") || keyDownSet.has("ArrowDown");
+      input.p2AxisY = p2PadAxis !== 0 ? p2PadAxis : p2KeyAxis;
+
+      input.justLeft = edge("left", left);
+      input.justRight = edge("right", right);
+      input.justUp = edge("up", up);
+      input.justDown = edge("down", down);
+      input.justA = edge("actA", actA);
+      input.justB = edge("actB", actB);
+      input.justX = edge("actX", actX);
+      input.justPause = edge("actPause", actPause);
+    }
+
+    // =========================================================
+    // 2. HUB NAVIGATIE & SCHERMBEHEER
+    // =========================================================
+    function selectCard(index) {
+      selectedCardIndex = (index + cards.length) % cards.length;
+      cards.forEach((card, i) => card.classList.toggle("selected", i === selectedCardIndex));
+    }
+
+    cards.forEach((card, idx) => {
+      card.addEventListener("mouseenter", () => selectCard(idx));
+      card.addEventListener("click", () => launchGame(card.dataset.game));
+    });
+
+    function showOverlay(title, desc) {
+      overlayTitleEl.textContent = title;
+      overlayDescEl.textContent = desc;
+      overlayEl.classList.add("show");
+    }
+
+    function hideOverlay() {
+      overlayEl.classList.remove("show");
+    }
+
+    function returnToHub() {
+      mode = "hub";
+      paused = false;
+      gameOver = false;
+      hideOverlay();
+      gameView.style.display = "none";
+      hubView.style.display = "flex";
+      refreshHighscoreLabels();
+    }
+
+    const games = {};
+
+    function launchGame(gameId) {
+      mode = gameId;
+      paused = false;
+      gameOver = false;
+      hideOverlay();
+      hubView.style.display = "none";
+      gameView.style.display = "flex";
+      if (games[gameId]) games[gameId].init();
+    }
+
+    btnPrimary.addEventListener("click", () => {
+      if (gameOver) launchGame(mode);
+      else if (paused) {
+        paused = false;
+        hideOverlay();
+        if (games[mode] && games[mode].onResume) games[mode].onResume();
+      }
+    });
+    btnHub.addEventListener("click", returnToHub);
+
+    function saveHighscore(gameId, score) {
+      if (gameId in highscores && score > highscores[gameId]) {
+        highscores[gameId] = score;
+        localStorage.setItem(`hub_hs_${gameId}`, String(score));
+      }
+    }
+
+    // =========================================================
+    // GAME 1: NEON SNAKE
+    // =========================================================
+    games.snake = (() => {
+      const TILE = 20;
+      const COLS = canvas.width / TILE;
+      const ROWS = canvas.height / TILE;
+      let body, dir, nextDir, food, score, timer, stepInterval;
+
+      function spawnFood() {
+        while (true) {
+          const fx = Math.floor(Math.random() * COLS);
+          const fy = Math.floor(Math.random() * ROWS);
+          if (!body.some((s) => s.x === fx && s.y === fy)) { food = { x: fx, y: fy }; return; }
+        }
+      }
+
+      function init() {
+        gameTitleEl.textContent = "Neon Snake";
+        body = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
+        dir = { x: 1, y: 0 };
+        nextDir = { x: 1, y: 0 };
+        score = 0; timer = 0; stepInterval = 110;
+        spawnFood();
+        updateHud();
+      }
+
+      function updateHud() {
+        hudScoreEl.textContent = score;
+        hudExtraEl.textContent = `Highscore: ${highscores.snake}`;
+      }
+
+      function update(dt) {
+        if (input.justUp && dir.y !== 1) nextDir = { x: 0, y: -1 };
+        else if (input.justDown && dir.y !== -1) nextDir = { x: 0, y: 1 };
+        else if (input.justLeft && dir.x !== 1) nextDir = { x: -1, y: 0 };
+        else if (input.justRight && dir.x !== -1) nextDir = { x: 1, y: 0 };
+
+        timer += dt;
+        if (timer < stepInterval) return;
+        timer = 0;
+
+        dir = nextDir;
+        const head = { x: (body[0].x + dir.x + COLS) % COLS, y: (body[0].y + dir.y + ROWS) % ROWS };
+
+        if (body.some((seg) => seg.x === head.x && seg.y === head.y)) {
+          gameOver = true;
+          saveHighscore("snake", score);
+          updateHud();
+          showOverlay("Game Over!", `Eindscore: ${score}. Druk op A voor opnieuw of B voor het menu.`);
+          return;
+        }
+
+        body.unshift(head);
+        if (head.x === food.x && head.y === food.y) {
+          score += 10;
+          stepInterval = Math.max(58, stepInterval - 2);
+          saveHighscore("snake", score);
+          updateHud();
+          spawnFood();
+        } else {
+          body.pop();
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#f87171";
+        ctx.fillRect(food.x * TILE + 2, food.y * TILE + 2, TILE - 4, TILE - 4);
+        body.forEach((seg, idx) => {
+          ctx.fillStyle = idx === 0 ? "#4ade80" : "#22c55e";
+          ctx.fillRect(seg.x * TILE + 1, seg.y * TILE + 1, TILE - 2, TILE - 2);
+        });
+      }
+
+      return { init, update, draw };
+    })();
+
+    // =========================================================
+    // GAME 2: BRICK BREAKER
+    // =========================================================
+    games.breakout = (() => {
+      let paddle, ball, bricks, score, lives;
+      const ROW_COLORS = ["#f87171", "#fb923c", "#facc15", "#4ade80", "#38bdf8"];
+
+      function buildBricks() {
+        bricks = [];
+        const cols = 10, pad = 6, offsetLeft = 24, offsetTop = 44;
+        const brickW = (canvas.width - offsetLeft * 2 - pad * (cols - 1)) / cols;
+        for (let r = 0; r < 5; r++) {
+          for (let c = 0; c < cols; c++) {
+            bricks.push({ x: offsetLeft + c * (brickW + pad), y: offsetTop + r * 24, w: brickW, h: 18, color: ROW_COLORS[r], alive: true });
+          }
+        }
+      }
+
+      function resetBall() {
+        ball = { x: canvas.width / 2, y: canvas.height - 55, r: 7, vx: 240 * (Math.random() > 0.5 ? 1 : -1), vy: -260 };
+      }
+
+      function init() {
+        gameTitleEl.textContent = "Brick Breaker";
+        paddle = { w: 105, h: 14, x: (canvas.width - 105) / 2, y: canvas.height - 28, speed: 480 };
+        score = 0; lives = 3;
+        buildBricks(); resetBall(); updateHud();
+      }
+
+      function updateHud() {
+        hudScoreEl.textContent = score;
+        hudExtraEl.textContent = `Levens: ${lives} • Best: ${highscores.breakout}`;
+      }
+
+      function update(dt) {
+        const sec = dt / 1000;
+        paddle.x = Math.max(8, Math.min(canvas.width - paddle.w - 8, paddle.x + input.axisX * paddle.speed * sec));
+        ball.x += ball.vx * sec; ball.y += ball.vy * sec;
+
+        if (ball.x - ball.r < 0) { ball.x = ball.r; ball.vx *= -1; }
+        if (ball.x + ball.r > canvas.width) { ball.x = canvas.width - ball.r; ball.vx *= -1; }
+        if (ball.y - ball.r < 0) { ball.y = ball.r; ball.vy *= -1; }
+
+        if (ball.vy > 0 && ball.y + ball.r >= paddle.y && ball.y - ball.r <= paddle.y + paddle.h && ball.x >= paddle.x && ball.x <= paddle.x + paddle.w) {
+          const hitOffset = (ball.x - (paddle.x + paddle.w / 2)) / (paddle.w / 2);
+          ball.vx = hitOffset * 330;
+          ball.vy = -Math.abs(ball.vy) * 1.02;
+          ball.y = paddle.y - ball.r;
+        }
+
+        for (const b of bricks) {
+          if (b.alive && ball.x + ball.r > b.x && ball.x - ball.r < b.x + b.w && ball.y + ball.r > b.y && ball.y - ball.r < b.y + b.h) {
+            b.alive = false; ball.vy *= -1; score += 20;
+            saveHighscore("breakout", score); updateHud(); break;
+          }
+        }
+
+        if (bricks.every((b) => !b.alive)) { score += 100; saveHighscore("breakout", score); buildBricks(); resetBall(); updateHud(); }
+
+        if (ball.y - ball.r > canvas.height) {
+          lives--; updateHud();
+          if (lives <= 0) { gameOver = true; showOverlay("Geen levens meer!", `Eindscore: ${score}. Druk op A voor opnieuw of B voor het menu.`); }
+          else resetBall();
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (const b of bricks) if (b.alive) { ctx.fillStyle = b.color; ctx.fillRect(b.x, b.y, b.w, b.h); }
+        ctx.fillStyle = "#e6edf3"; ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
+        ctx.fillStyle = "#3fb950"; ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fill();
+      }
+
+      return { init, update, draw };
+    })();
+
+    // =========================================================
+    // GAME 3: SPACE DEFENDER
+    // =========================================================
+    games.space = (() => {
+      let ship, bullets, enemyBullets, enemies, enemyDir, enemySpeed, shootCooldown, enemyShootTimer, wave, score, lives;
+
+      function spawnWave() {
+        enemies = [];
+        const rows = 4, cols = 9;
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            enemies.push({ x: 65 + c * 56, y: 42 + r * 36, w: 34, h: 22, alive: true, row: r });
+          }
+        }
+        enemyDir = 1;
+        enemySpeed = 55 + (wave - 1) * 18;
+      }
+
+      function init() {
+        gameTitleEl.textContent = "Space Defender";
+        ship = { x: canvas.width / 2 - 22, y: canvas.height - 36, w: 44, h: 18, speed: 380 };
+        bullets = []; enemyBullets = [];
+        shootCooldown = 0; enemyShootTimer = 0;
+        wave = 1; score = 0; lives = 3;
+        spawnWave(); updateHud();
+      }
+
+      function updateHud() {
+        hudScoreEl.textContent = score;
+        hudExtraEl.textContent = `Golf ${wave} • Levens: ${lives} • Best: ${highscores.space}`;
+      }
+
+      function update(dt) {
+        const sec = dt / 1000;
+        ship.x = Math.max(14, Math.min(canvas.width - ship.w - 14, ship.x + input.axisX * ship.speed * sec));
+
+        shootCooldown = Math.max(0, shootCooldown - sec);
+        if ((input.justA || input.justX) && shootCooldown <= 0) {
+          bullets.push({ x: ship.x + ship.w / 2 - 2, y: ship.y - 8, w: 4, h: 12, vy: -460 });
+          shootCooldown = 0.24;
+        }
+
+        bullets.forEach((b) => (b.y += b.vy * sec));
+        bullets = bullets.filter((b) => b.y + b.h > 0);
+
+        enemyBullets.forEach((b) => (b.y += b.vy * sec));
+        enemyBullets = enemyBullets.filter((b) => b.y < canvas.height);
+
+        let hitEdge = false;
+        const aliveEnemies = enemies.filter((e) => e.alive);
+        for (const e of aliveEnemies) {
+          e.x += enemyDir * enemySpeed * sec;
+          if (e.x < 16 || e.x + e.w > canvas.width - 16) hitEdge = true;
+        }
+        if (hitEdge) {
+          enemyDir *= -1;
+          for (const e of aliveEnemies) {
+            e.y += 16;
+            if (e.y + e.h >= ship.y) {
+              gameOver = true;
+              showOverlay("Invasie geslaagd!", `Eindscore: ${score}. Druk op A voor opnieuw of B voor het menu.`);
+              return;
+            }
+          }
+        }
+
+        enemyShootTimer += sec;
+        if (enemyShootTimer > Math.max(0.45, 1.3 - wave * 0.12) && aliveEnemies.length > 0) {
+          enemyShootTimer = 0;
+          const shooter = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
+          enemyBullets.push({ x: shooter.x + shooter.w / 2 - 2, y: shooter.y + shooter.h, w: 4, h: 10, vy: 250 });
+        }
+
+        for (const b of bullets) {
+          for (const e of aliveEnemies) {
+            if (b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y) {
+              e.alive = false; b.y = -999; score += 25;
+              saveHighscore("space", score); updateHud();
+            }
+          }
+        }
+
+        for (const eb of enemyBullets) {
+          if (eb.x < ship.x + ship.w && eb.x + eb.w > ship.x && eb.y < ship.y + ship.h && eb.y + eb.h > ship.y) {
+            eb.y = 9999; lives--; updateHud();
+            if (lives <= 0) {
+              gameOver = true;
+              showOverlay("Schip vernietigd!", `Eindscore: ${score}. Druk op A voor opnieuw of B voor het menu.`);
+              return;
+            }
+          }
+        }
+
+        if (enemies.every((e) => !e.alive)) {
+          wave++; score += 100; saveHighscore("space", score);
+          spawnWave(); updateHud();
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const colors = ["#c084fc", "#f87171", "#fb923c", "#facc15"];
+        for (const e of enemies) {
+          if (!e.alive) continue;
+          ctx.fillStyle = colors[e.row % colors.length];
+          ctx.fillRect(e.x, e.y, e.w, e.h);
+        }
+        ctx.fillStyle = "#38bdf8";
+        ctx.fillRect(ship.x, ship.y, ship.w, ship.h);
+        ctx.fillRect(ship.x + ship.w / 2 - 5, ship.y - 6, 10, 6);
+
+        ctx.fillStyle = "#4ade80";
+        for (const b of bullets) ctx.fillRect(b.x, b.y, b.w, b.h);
+        ctx.fillStyle = "#f87171";
+        for (const eb of enemyBullets) ctx.fillRect(eb.x, eb.y, eb.w, eb.h);
+      }
+
+      return { init, update, draw };
+    })();
+
+    // =========================================================
+    // GAME 4: FLAPPY NEON
+    // =========================================================
+    games.flappy = (() => {
+      let bird, pipes, spawnTimer, score, started;
+
+      function init() {
+        gameTitleEl.textContent = "Flappy Neon";
+        bird = { x: 140, y: canvas.height / 2, r: 13, vy: 0 };
+        pipes = [];
+        spawnTimer = 0; score = 0; started = false;
+        updateHud();
+      }
+
+      function updateHud() {
+        hudScoreEl.textContent = score;
+        hudExtraEl.textContent = `Best: ${highscores.flappy}`;
+      }
+
+      function addPipe() {
+        const gap = 128;
+        const minTop = 45;
+        const maxTop = canvas.height - gap - 45;
+        const topH = Math.floor(Math.random() * (maxTop - minTop)) + minTop;
+        pipes.push({ x: canvas.width + 20, w: 54, topH, gap, passed: false });
+      }
+
+      function update(dt) {
+        const sec = dt / 1000;
+        if (input.justA || input.justX || input.justUp) {
+          started = true;
+          bird.vy = -310;
+        }
+        if (!started) return;
+
+        bird.vy += 880 * sec;
+        bird.y += bird.vy * sec;
+
+        spawnTimer += sec;
+        if (spawnTimer > 1.55) { spawnTimer = 0; addPipe(); }
+
+        for (const p of pipes) {
+          p.x -= 210 * sec;
+          if (!p.passed && p.x + p.w < bird.x) {
+            p.passed = true; score++;
+            saveHighscore("flappy", score); updateHud();
+          }
+          const inX = bird.x + bird.r > p.x && bird.x - bird.r < p.x + p.w;
+          const hitTop = bird.y - bird.r < p.topH;
+          const hitBottom = bird.y + bird.r > p.topH + p.gap;
+          if (inX && (hitTop || hitBottom)) {
+            gameOver = true;
+            showOverlay("Gecrasht!", `Je haalde ${score} poorten. Druk op A voor opnieuw of B voor het menu.`);
+            return;
+          }
+        }
+        pipes = pipes.filter((p) => p.x + p.w > -20);
+
+        if (bird.y - bird.r < 0 || bird.y + bird.r > canvas.height) {
+          gameOver = true;
+          showOverlay("Uit de baan!", `Je haalde ${score} poorten. Druk op A voor opnieuw of B voor het menu.`);
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#2ea043";
+        for (const p of pipes) {
+          ctx.fillRect(p.x, 0, p.w, p.topH);
+          ctx.fillRect(p.x, p.topH + p.gap, p.w, canvas.height - (p.topH + p.gap));
+        }
+
+        ctx.fillStyle = "#facc15";
+        ctx.beginPath(); ctx.arc(bird.x, bird.y, bird.r, 0, Math.PI * 2); ctx.fill();
+
+        if (!started) {
+          ctx.fillStyle = "#e6edf3";
+          ctx.font = "600 18px system-ui, sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText("Druk op A / Omhoog / Spatie om te vliegen!", canvas.width / 2, canvas.height / 2 - 40);
+          ctx.textAlign = "left";
+        }
+      }
+
+      return { init, update, draw };
+    })();
+
+    // =========================================================
+    // GAME 5: 2P COUCH PONG
+    // =========================================================
+    games.pong = (() => {
+      let p1, p2, ball, s1, s2;
+      const WIN_SCORE = 7;
+
+      function resetBall(dir = 1) {
+        ball = {
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          r: 8,
+          vx: 270 * dir,
+          vy: (Math.random() * 200 - 100),
+        };
+      }
+
+      function init() {
+        gameTitleEl.textContent = "2P Couch Pong";
+        p1 = { x: 24, y: canvas.height / 2 - 45, w: 12, h: 90, speed: 390 };
+        p2 = { x: canvas.width - 36, y: canvas.height / 2 - 45, w: 12, h: 90, speed: 390 };
+        s1 = 0; s2 = 0;
+        resetBall(1); updateHud();
+      }
+
+      function updateHud() {
+        hudScoreEl.textContent = `${s1} - ${s2}`;
+        hudExtraEl.textContent = input.hasPad2 ? "2 Spelers Actief" : "P1 vs CPU (Sluit 2e pad aan voor 2P)";
+      }
+
+      function update(dt) {
+        const sec = dt / 1000;
+        const p1Dir = keyDownSet.has("KeyW") ? -1 : keyDownSet.has("KeyS") ? 1 : input.axisY;
+        p1.y = Math.max(8, Math.min(canvas.height - p1.h - 8, p1.y + p1Dir * p1.speed * sec));
+
+        if (input.hasPad2) {
+          p2.y = Math.max(8, Math.min(canvas.height - p2.h - 8, p2.y + input.p2AxisY * p2.speed * sec));
+        } else {
+          const targetY = ball.y - p2.h / 2;
+          const diff = targetY - p2.y;
+          p2.y += Math.sign(diff) * Math.min(Math.abs(diff), 255 * sec);
+          p2.y = Math.max(8, Math.min(canvas.height - p2.h - 8, p2.y));
+        }
+
+        ball.x += ball.vx * sec;
+        ball.y += ball.vy * sec;
+
+        if (ball.y - ball.r < 0) { ball.y = ball.r; ball.vy *= -1; }
+        if (ball.y + ball.r > canvas.height) { ball.y = canvas.height - ball.r; ball.vy *= -1; }
+
+        if (ball.vx < 0 && ball.x - ball.r <= p1.x + p1.w && ball.x + ball.r >= p1.x && ball.y >= p1.y && ball.y <= p1.y + p1.h) {
+          const offset = (ball.y - (p1.y + p1.h / 2)) / (p1.h / 2);
+          ball.vx = Math.min(540, Math.abs(ball.vx) * 1.05);
+          ball.vy = offset * 300;
+          ball.x = p1.x + p1.w + ball.r;
+        }
+
+        if (ball.vx > 0 && ball.x + ball.r >= p2.x && ball.x - ball.r <= p2.x + p2.w && ball.y >= p2.y && ball.y <= p2.y + p2.h) {
+          const offset = (ball.y - (p2.y + p2.h / 2)) / (p2.h / 2);
+          ball.vx = -Math.min(540, Math.abs(ball.vx) * 1.05);
+          ball.vy = offset * 300;
+          ball.x = p2.x - ball.r;
+        }
+
+        if (ball.x < 0) { s2++; updateHud(); checkWin() || resetBall(1); }
+        else if (ball.x > canvas.width) { s1++; updateHud(); checkWin() || resetBall(-1); }
+      }
+
+      function checkWin() {
+        if (s1 >= WIN_SCORE || s2 >= WIN_SCORE) {
+          gameOver = true;
+          const winner = s1 >= WIN_SCORE ? "Speler 1 wint!" : (input.hasPad2 ? "Speler 2 wint!" : "CPU wint!");
+          showOverlay(winner, `Eindstand ${s1} - ${s2}. Druk op A voor rematch of B voor het menu.`);
+          return true;
+        }
+        return false;
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#30363d";
+        for (let y = 10; y < canvas.height; y += 26) ctx.fillRect(canvas.width / 2 - 2, y, 4, 14);
+
+        ctx.fillStyle = "#38bdf8"; ctx.fillRect(p1.x, p1.y, p1.w, p1.h);
+        ctx.fillStyle = "#f87171"; ctx.fillRect(p2.x, p2.y, p2.w, p2.h);
+
+        ctx.fillStyle = "#e6edf3";
+        ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fill();
+      }
+
+      return { init, update, draw };
+    })();
+
+    // =========================================================
+    // GAME 6: ASTEROID DODGER
+    // =========================================================
+    games.asteroids = (() => {
+      let player, rocks, spawnTimer, score, difficulty;
+
+      function init() {
+        gameTitleEl.textContent = "Asteroid Dodger";
+        player = { x: canvas.width / 2, y: canvas.height - 46, r: 13, speed: 360 };
+        rocks = [];
+        spawnTimer = 0;
+        score = 0;
+        difficulty = 1;
+        updateHud();
+      }
+
+      function updateHud() {
+        hudScoreEl.textContent = Math.floor(score);
+        hudExtraEl.textContent = `Best: ${highscores.asteroids}`;
+      }
+
+      function spawnRock() {
+        const r = 12 + Math.random() * 20;
+        rocks.push({
+          x: r + Math.random() * (canvas.width - r * 2),
+          y: -r,
+          r,
+          vx: (Math.random() - 0.5) * 90 * difficulty,
+          vy: (150 + Math.random() * 140) * difficulty,
+        });
+      }
+
+      function update(dt) {
+        const sec = dt / 1000;
+        difficulty += sec * 0.08;
+        score += sec * 15 * difficulty;
+        saveHighscore("asteroids", Math.floor(score));
+        updateHud();
+
+        player.x = Math.max(player.r + 6, Math.min(canvas.width - player.r - 6, player.x + input.axisX * player.speed * sec));
+        player.y = Math.max(player.r + 6, Math.min(canvas.height - player.r - 6, player.y + input.axisY * player.speed * sec));
+
+        spawnTimer += sec;
+        const interval = Math.max(0.18, 0.65 / difficulty);
+        if (spawnTimer >= interval) {
+          spawnTimer = 0;
+          spawnRock();
+        }
+
+        for (const rock of rocks) {
+          rock.x += rock.vx * sec;
+          rock.y += rock.vy * sec;
+          if (rock.x - rock.r < 0 || rock.x + rock.r > canvas.width) rock.vx *= -1;
+
+          const dist = Math.hypot(rock.x - player.x, rock.y - player.y);
+          if (dist < rock.r + player.r - 2) {
+            gameOver = true;
+            showOverlay("Geraakt!", `Score: ${Math.floor(score)}. Druk op A voor opnieuw of B voor het menu.`);
+            return;
+          }
+        }
+
+        rocks = rocks.filter((rock) => rock.y - rock.r < canvas.height + 30);
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#38bdf8";
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, player.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#8b949e";
+        for (const rock of rocks) {
+          ctx.beginPath();
+          ctx.arc(rock.x, rock.y, rock.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      return { init, update, draw };
+    })();
+
+    // =========================================================
+    // GAME 7: 2048 GRID
+    // =========================================================
+    games.g2048 = (() => {
+      const SIZE = 4;
+      let grid, score, dirty;
+
+      function emptyGrid() {
+        return Array.from({ length: SIZE }, () => Array(SIZE).fill(0));
+      }
+
+      function addRandomTile() {
+        const empty = [];
+        for (let r = 0; r < SIZE; r++) {
+          for (let c = 0; c < SIZE; c++) {
+            if (grid[r][c] === 0) empty.push([r, c]);
+          }
+        }
+        if (empty.length === 0) return;
+        const [r, c] = empty[Math.floor(Math.random() * empty.length)];
+        grid[r][c] = Math.random() < 0.9 ? 2 : 4;
+      }
+
+      function init() {
+        gameTitleEl.textContent = "2048 Grid";
+        grid = emptyGrid();
+        score = 0;
+        dirty = true;
+        addRandomTile();
+        addRandomTile();
+        updateHud();
+      }
+
+      function onResume() {
+        dirty = true;
+      }
+
+      function updateHud() {
+        hudScoreEl.textContent = score;
+        hudExtraEl.textContent = `Best: ${highscores.g2048}`;
+      }
+
+      function slideLine(line) {
+        const nonZero = line.filter((v) => v !== 0);
+        const out = [];
+        let moved = nonZero.length !== line.length;
+
+        for (let i = 0; i < nonZero.length; i++) {
+          if (i + 1 < nonZero.length && nonZero[i] === nonZero[i + 1]) {
+            const merged = nonZero[i] * 2;
+            out.push(merged);
+            score += merged;
+            saveHighscore("g2048", score);
+            moved = true;
+            i++;
+          } else {
+            out.push(nonZero[i]);
+          }
+        }
+        while (out.length < SIZE) out.push(0);
+        if (!moved && out.some((v, idx) => v !== line[idx])) moved = true;
+        return { line: out, moved };
+      }
+
+      function move(dir) {
+        let anyMoved = false;
+
+        for (let i = 0; i < SIZE; i++) {
+          let line = [];
+          for (let j = 0; j < SIZE; j++) {
+            if (dir === "left" || dir === "right") line.push(grid[i][j]);
+            else line.push(grid[j][i]);
+          }
+          if (dir === "right" || dir === "down") line.reverse();
+
+          const res = slideLine(line);
+          if (res.moved) anyMoved = true;
+          const nextLine = res.line;
+          if (dir === "right" || dir === "down") nextLine.reverse();
+
+          for (let j = 0; j < SIZE; j++) {
+            if (dir === "left" || dir === "right") grid[i][j] = nextLine[j];
+            else grid[j][i] = nextLine[j];
+          }
+        }
+
+        if (anyMoved) {
+          addRandomTile();
+          updateHud();
+          dirty = true;
+          if (!canMove()) {
+            gameOver = true;
+            showOverlay("Geen zetten meer!", `Eindscore: ${score}. Druk op A voor opnieuw of B voor het menu.`);
+          }
+        }
+      }
+
+      function canMove() {
+        for (let r = 0; r < SIZE; r++) {
+          for (let c = 0; c < SIZE; c++) {
+            if (grid[r][c] === 0) return true;
+            if (r + 1 < SIZE && grid[r][c] === grid[r + 1][c]) return true;
+            if (c + 1 < SIZE && grid[r][c] === grid[r][c + 1]) return true;
+          }
+        }
+        return false;
+      }
+
+      function update() {
+        if (input.justLeft) move("left");
+        else if (input.justRight) move("right");
+        else if (input.justUp) move("up");
+        else if (input.justDown) move("down");
+      }
+
+      function tileColor(val) {
+        const map = {
+          0: "#161b22", 2: "#21262d", 4: "#2d333b", 8: "#1f6feb",
+          16: "#238636", 32: "#9e6a03", 64: "#da3633", 128: "#8957e5",
+          256: "#388bfd", 512: "#2ea043", 1024: "#d29922", 2048: "#f85149",
+        };
+        return map[val] || "#3fb950";
+      }
+
+      function draw() {
+        if (!dirty && !gameOver) return;
+        dirty = false;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const boxSize = 340;
+        const startX = (canvas.width - boxSize) / 2;
+        const startY = (canvas.height - boxSize) / 2;
+        const gap = 10;
+        const cell = (boxSize - gap * (SIZE + 1)) / SIZE;
+
+        ctx.fillStyle = "#010409";
+        ctx.fillRect(startX, startY, boxSize, boxSize);
+
+        for (let r = 0; r < SIZE; r++) {
+          for (let c = 0; c < SIZE; c++) {
+            const val = grid[r][c];
+            const x = startX + gap + c * (cell + gap);
+            const y = startY + gap + r * (cell + gap);
+
+            ctx.fillStyle = tileColor(val);
+            ctx.fillRect(x, y, cell, cell);
+
+            if (val !== 0) {
+              ctx.fillStyle = "#ffffff";
+              ctx.font = val >= 1024 ? "700 22px system-ui, sans-serif" : "700 28px system-ui, sans-serif";
+              ctx.textAlign = "center";
+              ctx.textBaseline = "middle";
+              ctx.fillText(String(val), x + cell / 2, y + cell / 2);
+            }
+          }
+        }
+        ctx.textAlign = "left";
+        ctx.textBaseline = "alphabetic";
+      }
+
+      return { init, update, draw, onResume };
+    })();
+
+    // =========================================================
+    // GAME 8: NEON TETRIS
+    // =========================================================
+    games.tetris = (() => {
+      const COLS = 10;
+      const ROWS = 20;
+      const BLOCK = 19;
+      const BOARD_W = COLS * BLOCK;
+      const BOARD_H = ROWS * BLOCK;
+      const OFFSET_X = Math.floor((canvas.width - BOARD_W) / 2);
+      const OFFSET_Y = Math.floor((canvas.height - BOARD_H) / 2);
+
+      const COLORS = [
+        null, "#22d3ee", "#60a5fa", "#fb923c",
+        "#facc15", "#4ade80", "#c084fc", "#f87171",
+      ];
+
+      const SHAPES = [
+        [],
+        [[1, 1, 1, 1]],
+        [[2, 0, 0], [2, 2, 2]],
+        [[0, 0, 3], [3, 3, 3]],
+        [[4, 4], [4, 4]],
+        [[0, 5, 5], [5, 5, 0]],
+        [[0, 6, 0], [6, 6, 6]],
+        [[7, 7, 0], [0, 7, 7]],
+      ];
+
+      let board, piece, score, lines, level, dropTimer, repeatTimer;
+
+      function createBoard() {
+        return Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+      }
+
+      function randomPiece() {
+        const id = Math.floor(Math.random() * (SHAPES.length - 1)) + 1;
+        const matrix = SHAPES[id].map((r) => [...r]);
+        return {
+          x: Math.floor((COLS - matrix[0].length) / 2),
+          y: 0,
+          matrix,
+        };
+      }
+
+      function init() {
+        gameTitleEl.textContent = "Neon Tetris";
+        board = createBoard();
+        piece = randomPiece();
+        score = 0;
+        lines = 0;
+        level = 1;
+        dropTimer = 0;
+        repeatTimer = 0;
+        updateHud();
+      }
+
+      function updateHud() {
+        hudScoreEl.textContent = score;
+        hudExtraEl.textContent = `Lvl ${level} • Lijnen ${lines} • Best: ${highscores.tetris}`;
+      }
+
+      function collides(dx, dy, matrix = piece.matrix) {
+        for (let y = 0; y < matrix.length; y++) {
+          for (let x = 0; x < matrix[y].length; x++) {
+            if (!matrix[y][x]) continue;
+            const nx = piece.x + x + dx;
+            const ny = piece.y + y + dy;
+            if (nx < 0 || nx >= COLS || ny >= ROWS) return true;
+            if (ny >= 0 && board[ny][nx]) return true;
+          }
+        }
+        return false;
+      }
+
+      function rotateMatrix(matrix) {
+        const rows = matrix.length;
+        const cols = matrix[0].length;
+        return Array.from({ length: cols }, (_, c) =>
+          Array.from({ length: rows }, (_, r) => matrix[rows - 1 - r][c])
+        );
+      }
+
+      function tryRotate() {
+        const rotated = rotateMatrix(piece.matrix);
+        for (const kick of [0, -1, 1]) {
+          if (!collides(kick, 0, rotated)) {
+            piece.matrix = rotated;
+            piece.x += kick;
+            return;
+          }
+        }
+      }
+
+      function lockAndSpawn() {
+        piece.matrix.forEach((row, y) => {
+          row.forEach((val, x) => {
+            if (val && piece.y + y >= 0) {
+              board[piece.y + y][piece.x + x] = val;
+            }
+          });
+        });
+
+        let cleared = 0;
+        for (let y = ROWS - 1; y >= 0; y--) {
+          if (board[y].every((v) => v !== 0)) {
+            board.splice(y, 1);
+            board.unshift(Array(COLS).fill(0));
+            cleared++;
+            y++;
+          }
+        }
+
+        if (cleared > 0) {
+          const pts = [0, 100, 300, 500, 800];
+          score += (pts[cleared] || 800) * level;
+          lines += cleared;
+          level = Math.floor(lines / 10) + 1;
+          saveHighscore("tetris", score);
+        }
+
+        updateHud();
+        piece = randomPiece();
+        if (collides(0, 0)) {
+          gameOver = true;
+          showOverlay("Game Over!", `Eindscore: ${score}. Druk op A voor opnieuw of B voor het menu.`);
+        }
+      }
+
+      function stepDown() {
+        if (!collides(0, 1)) {
+          piece.y++;
+        } else {
+          lockAndSpawn();
+        }
+        dropTimer = 0;
+      }
+
+      function hardDrop() {
+        while (!collides(0, 1)) {
+          piece.y++;
+          score += 2;
+        }
+        saveHighscore("tetris", score);
+        lockAndSpawn();
+        dropTimer = 0;
+      }
+
+      function update(dt) {
+        if (input.justA || input.justUp) tryRotate();
+        if (input.justX) { hardDrop(); return; }
+
+        if (input.justLeft && !collides(-1, 0)) { piece.x--; repeatTimer = 0; }
+        if (input.justRight && !collides(1, 0)) { piece.x++; repeatTimer = 0; }
+
+        if (input.left || input.right || input.down) {
+          repeatTimer += dt;
+          if (repeatTimer > 125) {
+            repeatTimer = 0;
+            if (input.left && !collides(-1, 0)) piece.x--;
+            if (input.right && !collides(1, 0)) piece.x++;
+            if (input.down) stepDown();
+          }
+        } else {
+          repeatTimer = 0;
+        }
+
+        dropTimer += dt;
+        const interval = Math.max(110, 780 - (level - 1) * 65);
+        if (dropTimer >= interval) {
+          stepDown();
+        }
+      }
+
+      function drawCell(x, y, color) {
+        ctx.fillStyle = color;
+        ctx.fillRect(
+          OFFSET_X + x * BLOCK + 1,
+          OFFSET_Y + y * BLOCK + 1,
+          BLOCK - 2,
+          BLOCK - 2
+        );
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#161b22";
+        ctx.fillRect(OFFSET_X, OFFSET_Y, BOARD_W, BOARD_H);
+        ctx.strokeStyle = "#30363d";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(OFFSET_X, OFFSET_Y, BOARD_W, BOARD_H);
+
+        for (let y = 0; y < ROWS; y++) {
+          for (let x = 0; x < COLS; x++) {
+            if (board[y][x]) drawCell(x, y, COLORS[board[y][x]]);
+          }
+        }
+
+        if (piece) {
+          piece.matrix.forEach((row, y) => {
+            row.forEach((val, x) => {
+              if (val) drawCell(piece.x + x, piece.y + y, COLORS[val]);
+            });
+          });
+        }
+      }
+
+      return { init, update, draw };
+    })();
+
+    // =========================================================
+    // 3. HOOFD-GAMELOOP
+    // =========================================================
+    let lastTime = performance.now();
+
+    function mainLoop(now) {
+      const dt = Math.min(50, now - lastTime);
+      lastTime = now;
+
+      updateInput();
+
+      if (mode === "hub") {
+        if (input.justLeft || input.justUp) selectCard(selectedCardIndex - 1);
+        if (input.justRight || input.justDown) selectCard(selectedCardIndex + 1);
+        if (input.justA) launchGame(cards[selectedCardIndex].dataset.game);
+      } else {
+        if (input.justB && (paused || gameOver)) {
+          returnToHub();
+        } else if (input.justPause && !gameOver) {
+          paused = !paused;
+          if (paused) showOverlay("Gepauzeerd", "Druk op Start/P om door te gaan, of B/Esc voor het hoofdmenu.");
+          else {
+            hideOverlay();
+            if (games[mode] && games[mode].onResume) games[mode].onResume();
+          }
+        } else if (gameOver && input.justA) {
+          launchGame(mode);
+        } else if (!paused && !gameOver && games[mode]) {
+          games[mode].update(dt);
+          games[mode].draw();
+        }
+      }
+
+      requestAnimationFrame(mainLoop);
+    }
+
+    requestAnimationFrame(mainLoop);
+  </script>
+</body>
+</html>
